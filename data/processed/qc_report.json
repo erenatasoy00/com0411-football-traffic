@@ -1,0 +1,100 @@
+[
+  {
+    "id": "QC01",
+    "check": "Study months available on the IBB portal",
+    "value": "all",
+    "threshold": "all",
+    "passed": true
+  },
+  {
+    "id": "QC02",
+    "check": "Unique (geohash, hour) keys",
+    "value": 0,
+    "threshold": "0 duplicates",
+    "passed": true
+  },
+  {
+    "id": "QC03",
+    "check": "Speed range and min<=avg<=max after cleaning",
+    "value": 0,
+    "threshold": "0 violations",
+    "passed": true
+  },
+  {
+    "id": "QC04",
+    "check": "Remaining missing share in kept cells",
+    "value": 0.0575,
+    "threshold": "<= 0.20",
+    "passed": true
+  },
+  {
+    "id": "QC05",
+    "check": "IQR-rule outlier share of cell-hours",
+    "value": 0.0352,
+    "threshold": "<= 0.10",
+    "passed": true
+  },
+  {
+    "id": "QC06",
+    "check": "Geohash/coordinate mismatch share",
+    "value": 0.0,
+    "threshold": "<= 0.01",
+    "passed": true
+  },
+  {
+    "id": "QC07",
+    "check": "Time-zone sanity: hour with fewest vehicles",
+    "value": 3,
+    "threshold": "01-06 local",
+    "passed": true
+  },
+  {
+    "id": "QC08",
+    "check": "Weather join completeness (missing share)",
+    "value": 0.0,
+    "threshold": "<= 0.01",
+    "passed": true
+  },
+  {
+    "id": "QC09",
+    "check": "Duplicate fixtures (stadium, kick-off)",
+    "value": 0,
+    "threshold": "0",
+    "passed": true
+  },
+  {
+    "id": "QC10",
+    "check": "Kick-off times in 11:00-23:59",
+    "value": 0,
+    "threshold": "0 outside",
+    "passed": true
+  },
+  {
+    "id": "QC11",
+    "check": "Home club / stadium consistency",
+    "value": 0,
+    "threshold": "0 (or documented)",
+    "passed": true
+  },
+  {
+    "id": "QC12",
+    "check": "Main-season matches with >=2 control days",
+    "value": 0.907,
+    "threshold": ">= 0.90",
+    "passed": true
+  },
+  {
+    "id": "QC13",
+    "check": "Standardised speed: mean 0 and SD 1 in every cell",
+    "value": "verified",
+    "threshold": "|mean| and |SD-1| < 1e-6",
+    "passed": true
+  },
+  {
+    "id": "QC14",
+    "check": "Complete hourly grid (rows per cell identical)",
+    "value": 1,
+    "threshold": "1 distinct count",
+    "passed": true
+  }
+]

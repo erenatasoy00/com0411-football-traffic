@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match-day traffic forecast · Istanbul</title>
+<style>
+/* ---------------------------------------------------------------- theme tokens
+   palette #5C7057 #89A482 #ACC5A6 #D1EDD3, blue for 'moderate', one brick red for the match effect and 'congested' */
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --g1: #5C7057; --g2: #89A482; --g3: #ACC5A6; --g4: #D1EDD3;
+  --bg: #EDF3EB;
+  --blob-1: rgba(137, 164, 130, .55); --blob-2: rgba(209, 237, 211, .95); --blob-3: rgba(172, 197, 166, .60); --blob-4: rgba(180, 83, 58, .10);
+  --glass: rgba(255, 255, 255, .56); --glass-strong: rgba(255, 255, 255, .74); --glass-soft: rgba(255, 255, 255, .38);
+  --glass-border: rgba(255, 255, 255, .78); --glass-edge: rgba(70, 92, 64, .12);
+  --shine: rgba(255, 255, 255, .55); --shadow: 0 12px 36px rgba(38, 52, 35, .12), 0 1px 2px rgba(38, 52, 35, .06);
+  --text: #22301F; --text-2: #3F4B3B; --muted: #66735F; --heading: #4E6349;
+  --accent: #B4533A; --accent-soft: rgba(180, 83, 58, .12);
+  --input: rgba(255, 255, 255, .62); --input-border: rgba(92, 112, 87, .22);
+  --primary-1: #6E8668; --primary-2: #56694F; --on-primary: #fff;
+  --tag: rgba(209, 237, 211, .85); --tag-text: #3E4D3A; --hot: rgba(180, 83, 58, .14); --hot-text: #8E3F2B;
+  --warn: rgba(116, 163, 211, .22); --warn-text: #1F3F60; --info: rgba(137, 164, 130, .16); --info-text: #3E4D3A;
+  --row-sel: rgba(137, 164, 130, .18); --row-line: rgba(92, 112, 87, .12);
+  /* charts and map */
+  --c-match: #B4533A; --c-normal: #93B08C; --c-hist: #5C7057; --c-obs: #22301F;
+  --c-free: #89A482; --c-moderate: #74A3D3; --c-congested: #B4533A;
+  --c-grid: rgba(60, 80, 55, .13); --c-text: #66735F; --c-text2: #8C9888;
+  --c-band-match: rgba(137, 164, 130, .18); --c-band-match-text: #5C7057; --c-band-after: rgba(180, 83, 58, .10); --c-band-after-text: #9A4430;
+  --c-map-bg: rgba(255, 255, 255, .45); --c-road: #3F4B3B; --c-road-case: rgba(255, 255, 255, .85);
+  --c-label: #22301F; --c-label-halo: #ffffff; --c-cell-text: #22301F; --c-cell-halo: rgba(255, 255, 255, .78); --c-cell-edge: rgba(255, 255, 255, .9);
+  --c-neutral: 245, 249, 244; --c-slower: 180, 83, 58; --c-faster: 92, 112, 87; --c-dot-edge: #ffffff;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0B110C;
+  --blob-1: rgba(92, 112, 87, .55); --blob-2: rgba(34, 52, 33, .85); --blob-3: rgba(110, 139, 104, .30); --blob-4: rgba(224, 122, 95, .14);
+  --glass: rgba(28, 38, 27, .55); --glass-strong: rgba(34, 46, 33, .74); --glass-soft: rgba(28, 38, 27, .35);
+  --glass-border: rgba(255, 255, 255, .10); --glass-edge: rgba(209, 237, 211, .07);
+  --shine: rgba(255, 255, 255, .10); --shadow: 0 14px 40px rgba(0, 0, 0, .50), 0 1px 2px rgba(0, 0, 0, .35);
+  --text: #E8F1E6; --text-2: #C9D8C5; --muted: #95A891; --heading: #D1EDD3;
+  --accent: #E07A5F; --accent-soft: rgba(224, 122, 95, .16);
+  --input: rgba(255, 255, 255, .06); --input-border: rgba(209, 237, 211, .16);
+  --primary-1: #7E9A78; --primary-2: #5C7057; --on-primary: #fff;
+  --tag: rgba(209, 237, 211, .12); --tag-text: #D1EDD3; --hot: rgba(224, 122, 95, .18); --hot-text: #F2B8A6;
+  --warn: rgba(116, 163, 211, .16); --warn-text: #C9DEF3; --info: rgba(137, 164, 130, .16); --info-text: #D1EDD3;
+  --row-sel: rgba(137, 164, 130, .16); --row-line: rgba(255, 255, 255, .07);
+  --c-match: #E07A5F; --c-normal: #7E9A78; --c-hist: #ACC5A6; --c-obs: #F1F6EF;
+  --c-free: #6F8B68; --c-moderate: #4F7FAF; --c-congested: #C9614A;
+  --c-grid: rgba(255, 255, 255, .08); --c-text: #95A891; --c-text2: #7D8F79;
+  --c-band-match: rgba(137, 164, 130, .14); --c-band-match-text: #ACC5A6; --c-band-after: rgba(224, 122, 95, .12); --c-band-after-text: #EDA28D;
+  --c-map-bg: rgba(255, 255, 255, .03); --c-road: #CFDACC; --c-road-case: rgba(0, 0, 0, .55);
+  --c-label: #F1F6EF; --c-label-halo: #0B110C; --c-cell-text: #ffffff; --c-cell-halo: rgba(0, 0, 0, .55); --c-cell-edge: rgba(255, 255, 255, .14);
+  --c-neutral: 44, 56, 43; --c-slower: 201, 97, 74; --c-faster: 137, 164, 130; --c-dot-edge: #0B110C;
+}
+
+/* ---------------------------------------------------------------- base */
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; min-height: 100vh; color: var(--text); font-size: 15px; -webkit-font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Inter, Calibri, Arial, sans-serif;
+  background: transparent; transition: color .3s ease; }
+body::before { content: ""; position: fixed; inset: -10%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 12% 8%, var(--blob-1), transparent 70%),
+    radial-gradient(45% 40% at 88% 14%, var(--blob-2), transparent 70%),
+    radial-gradient(40% 45% at 72% 88%, var(--blob-3), transparent 70%),
+    radial-gradient(30% 30% at 22% 82%, var(--blob-4), transparent 70%),
+    var(--bg);
+  filter: saturate(115%); transition: background .4s ease; }
+button { font: inherit; cursor: pointer; color: inherit; }
+::selection { background: rgba(137, 164, 130, .35); }
+
+/* ---------------------------------------------------------------- glass surfaces */
+.glass, .card, header.bar, .tabs, .seg, .lang, .icon-btn {
+  position: relative; background: var(--glass); border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: var(--shadow), inset 0 1px 0 var(--shine), inset 0 0 0 1px var(--glass-edge);
+}
+.card { border-radius: 22px; padding: 18px 20px; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, background .3s ease; }
+.card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(140deg, var(--shine) 0%, transparent 32%, transparent 70%, rgba(255, 255, 255, .06) 100%); opacity: .9; }
+.card > * { position: relative; }
+
+/* ---------------------------------------------------------------- header bar */
+header.bar { position: sticky; top: 12px; z-index: 20; margin: 12px 20px 0; border-radius: 22px; padding: 12px 18px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--glass-strong); }
+.brand { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px; }
+.logo { width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center;
+  background: linear-gradient(145deg, var(--g2), var(--g1)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 6px 14px rgba(60, 80, 55, .28); }
+.logo svg { width: 22px; height: 22px; }
+header h1 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: -.2px; color: var(--text); }
+header .sub { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.controls { display: flex; gap: 8px; align-items: center; }
+.lang { display: inline-flex; border-radius: 999px; padding: 3px; gap: 2px; box-shadow: inset 0 1px 0 var(--shine); }
+.lang button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font-weight: 700; font-size: 12.5px; color: var(--muted); transition: all .2s ease; }
+.lang button.on, .seg button.on { background: linear-gradient(180deg, var(--primary-1), var(--primary-2)); color: #fff; box-shadow: 0 3px 10px rgba(60, 80, 55, .3), inset 0 1px 0 rgba(255, 255, 255, .3); }
+.icon-btn { width: 38px; height: 38px; border-radius: 999px; display: grid; place-items: center; padding: 0; color: var(--text); box-shadow: inset 0 1px 0 var(--shine); transition: transform .2s ease; }
+.icon-btn:hover { transform: scale(1.06); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* ---------------------------------------------------------------- layout */
+main { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; padding: 18px 20px 32px; max-width: 1600px; margin: 0 auto; }
+aside { display: flex; flex-direction: column; gap: 16px; }
+section#out, .view { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+h2 { font-size: 17px; margin: 0 0 14px; color: var(--heading); letter-spacing: -.2px; }
+h3 { font-size: 15px; margin: 0; color: var(--heading); letter-spacing: -.1px; }
+.small { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+.small b { color: var(--text); }
+.small ul { margin: 6px 0 0; padding-left: 18px; }
+
+/* ---------------------------------------------------------------- form */
+label { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .6px; }
+input, select { display: block; width: 100%; margin-top: 5px; padding: 9px 12px; font: inherit; font-size: 15px; color: var(--text);
+  border: 1px solid var(--input-border); border-radius: 12px; background: var(--input); text-transform: none; letter-spacing: 0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .05); transition: border-color .2s ease, box-shadow .2s ease; }
+input:focus, select:focus { outline: none; border-color: var(--g2); box-shadow: 0 0 0 4px rgba(137, 164, 130, .25); }
+.primary { width: 100%; padding: 11px; border: 0; border-radius: 14px; color: var(--on-primary); font-weight: 700; font-size: 15px; margin-top: 4px;
+  background: linear-gradient(180deg, var(--primary-1), var(--primary-2));
+  box-shadow: 0 8px 20px rgba(60, 80, 55, .28), inset 0 1px 0 rgba(255, 255, 255, .35); transition: transform .15s ease, box-shadow .2s ease; }
+.primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(60, 80, 55, .34), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.primary:active { transform: translateY(0); }
+.primary:disabled { opacity: .6; cursor: wait; }
+.err { color: var(--accent); font-size: 13.5px; margin: 8px 0 0; min-height: 1em; }
+
+/* ---------------------------------------------------------------- upcoming matches */
+.upcoming { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+.upcoming button { text-align: left; border: 1px solid var(--glass-border); background: var(--glass-soft); border-radius: 14px; padding: 8px 12px;
+  color: var(--text); font-size: 13px; line-height: 1.38; transition: all .2s ease; box-shadow: inset 0 1px 0 var(--shine); }
+.upcoming button:hover { transform: translateX(2px); background: var(--glass-strong); }
+.upcoming button.on { border-color: var(--g2); background: var(--glass-strong); box-shadow: 0 0 0 3px rgba(137, 164, 130, .28), inset 0 1px 0 var(--shine); }
+.upcoming .when { font-weight: 700; color: var(--heading); }
+.upcoming .meta { color: var(--muted); font-size: 12px; }
+
+/* ---------------------------------------------------------------- toolbar, tabs, buttons */
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tabs { display: inline-flex; gap: 4px; border-radius: 999px; padding: 4px; }
+.tabs button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; color: var(--muted); font-weight: 600; font-size: 14px; transition: all .2s ease; }
+.tabs button.on { background: linear-gradient(180deg, var(--primary-1), var(--primary-2)); color: #fff; box-shadow: 0 4px 12px rgba(60, 80, 55, .3), inset 0 1px 0 rgba(255, 255, 255, .3); }
+.actions { display: inline-flex; gap: 8px; }
+.ghost { border: 1px solid var(--glass-border); background: var(--glass); color: var(--text); border-radius: 999px; padding: 8px 15px; font-weight: 600; font-size: 13.5px;
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); box-shadow: var(--shadow), inset 0 1px 0 var(--shine); transition: transform .2s ease; }
+.ghost:hover { transform: translateY(-1px); }
+
+/* ---------------------------------------------------------------- content */
+.matchline .title { font-size: 24px; font-weight: 750; color: var(--text); letter-spacing: -.4px; }
+.matchline .sub { color: var(--text-2); margin-top: 4px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.tag { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--tag); color: var(--tag-text); border: 1px solid var(--glass-border); }
+.tag.hot { background: var(--hot); color: var(--hot-text); }
+.warn { margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: var(--warn); color: var(--warn-text); font-size: 13.5px; line-height: 1.5; border: 1px solid var(--glass-border); }
+.info { margin-top: 10px; padding: 10px 14px; border-radius: 14px; background: var(--info); color: var(--info-text); font-size: 13.5px; border: 1px solid var(--glass-border); }
+.recovery { position: relative; border-radius: 20px; padding: 14px 20px; font-size: 15.5px; line-height: 1.5; color: #fff; overflow: hidden;
+  background: linear-gradient(120deg, rgba(92, 112, 87, .94), rgba(122, 146, 115, .88));
+  -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, .28); box-shadow: 0 12px 30px rgba(60, 80, 55, .28), inset 0 1px 0 rgba(255, 255, 255, .35); }
+:root[data-theme="dark"] .recovery { background: linear-gradient(120deg, rgba(92, 112, 87, .55), rgba(60, 76, 57, .55)); }
+.recovery b { color: var(--g4); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.kpi:hover { transform: translateY(-2px); }
+.kpi .k { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.kpi .v { font-size: 32px; font-weight: 750; margin-top: 6px; color: var(--heading); letter-spacing: -.6px; font-variant-numeric: tabular-nums; }
+.kpi .s { font-size: 12.5px; color: var(--text-2); margin-top: 3px; line-height: 1.4; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-2); }
+.legend i { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+.legend i.box { width: 11px; height: 11px; border-radius: 3px; }
+.legend i.dash { background: repeating-linear-gradient(90deg, var(--c-hist) 0 5px, transparent 5px 8px) !important; }
+.legend i.band { height: 10px; background: var(--accent-soft); border-radius: 3px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font-family: inherit; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.seg { display: inline-flex; border-radius: 999px; padding: 3px; gap: 2px; box-shadow: inset 0 1px 0 var(--shine); }
+.seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); font-weight: 600; transition: all .2s ease; }
+
+.slider { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13.5px; }
+.slider input { margin: 0; padding: 0; flex: 1; accent-color: var(--g1); background: transparent; border: 0; box-shadow: none; }
+.slider button { width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--glass-border); background: var(--glass-strong); color: var(--heading); box-shadow: inset 0 1px 0 var(--shine); }
+.slider b { min-width: 118px; display: inline-block; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-size: 11.5px; color: var(--muted); font-weight: 700; padding: 7px 6px; border-bottom: 1px solid var(--row-line); text-transform: uppercase; letter-spacing: .4px; }
+td { padding: 6px 6px; border-bottom: 1px solid var(--row-line); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.sel td { background: var(--row-sel); }
+tr.sel td:first-child { border-radius: 8px 0 0 8px; } tr.sel td:last-child { border-radius: 0 8px 8px 0; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--row-sel); }
+.pill { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.hint { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.works li { margin-bottom: 7px; }
+.works .meta { color: var(--muted); font-size: 12px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 10px; }
+.scroll { max-height: 440px; overflow: auto; }
+.print-only { display: none; }
+.mapgrid { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(300px, 1fr); gap: 16px; align-items: start; }
+.mapside { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+#map { max-height: 74vh; }
+.hoursum .k { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.hoursum .clock { font-size: 34px; font-weight: 750; color: var(--heading); letter-spacing: -.8px; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.hoursum .clock span { font-size: 14.5px; font-weight: 600; color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+.hoursum .near { margin-top: 8px; font-size: 14px; color: var(--text); }
+.countbar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; margin: 12px 0 8px; box-shadow: inset 0 0 0 1px var(--glass-border); }
+.countbar i { display: block; height: 100%; }
+.grid2.solo { grid-template-columns: 1fr; }
+#cellTbl { font-size: 12.5px; }
+#cellTbl th, #cellTbl td { padding: 6px 4px; }
+#cellTbl th { font-size: 10.5px; letter-spacing: .2px; }
+.mapgrid > .card:first-child { position: sticky; top: 86px; }
+#cellTbl td:first-child { white-space: nowrap; }
+.hint a, .small a { color: var(--heading); font-weight: 700; }
+.view { animation: rise .35s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 1300px) { .mapgrid { grid-template-columns: 1fr; } .mapgrid > .card:first-child { position: static; } }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr; } .grid2 { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+@media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .card, header.bar, .tabs, .seg, .lang, .icon-btn, .ghost, .recovery { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--glass-strong); }
+}
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  :root, :root[data-theme] { color-scheme: light; --text: #22301F; --text-2: #3F4B3B; --muted: #66735F; --heading: #4E6349; }
+  body::before { display: none; }
+  body { background: #fff; font-size: 12px; }
+  header.bar, aside, .toolbar, .slider, .seg, #speedHint, #mapHint, #cellListCard, #viewTest { display: none !important; }
+  #viewForecast, #viewMap { display: flex !important; }
+  #viewMap { break-before: page; }
+  .mapgrid { grid-template-columns: 1.6fr 1fr; }
+  #map { max-height: 150mm; }
+  .mapgrid > .card:first-child { position: static; }
+  main { display: block; padding: 0; max-width: none; }
+  .card { break-inside: avoid; background: #fff !important; border-color: #ccc; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; margin-bottom: 8px; }
+  .card::before { display: none; }
+  .print-only { display: block; }
+  .grid2 { grid-template-columns: 1fr 1fr; }
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l3.2 2.3-1.2 3.8h-4l-1.2-3.8z"/><path d="M12 3.5v4M20.3 9.5l-3.6.8M17.2 19.2l-1.9-3.4M6.8 19.2l1.9-3.4M3.7 9.5l3.6.8"/></svg></div>
+    <div><h1 data-i18n="title"></h1><div class="sub" data-i18n="subtitle"></div></div>
+  </div>
+  <div class="controls">
+    <div class="lang"><button id="lEN" type="button">EN</button><button id="lTR" type="button">TR</button></div>
+    <button class="icon-btn" id="theme" type="button"></button>
+  </div>
+</header>
+<main>
+  <aside>
+    <form id="f" class="card" autocomplete="off">
+      <h2 data-i18n="formTitle"></h2>
+      <label><span data-i18n="date"></span> <input type="date" id="date" value="2026-12-15" required></label>
+      <label><span data-i18n="time"></span> <input type="time" id="time" value="20:00" step="900" required></label>
+      <label><span data-i18n="stadium"></span> <select id="stadium"></select></label>
+      <label><span data-i18n="opponent"></span> <input id="opponent" list="opps" value="Fenerbahçe" required></label>
+      <datalist id="opps"></datalist>
+      <label><span data-i18n="competition"></span> <select id="competition"></select></label>
+      <button class="primary" id="go" type="submit" data-i18n="go"></button>
+      <p class="err" id="err"></p>
+    </form>
+    <div class="card small"><b data-i18n="upTitle"></b><div class="hint" data-i18n="upHint"></div><div class="upcoming" id="upcoming"></div></div>
+    <div class="card small" id="quality"></div>
+    <div class="card small" data-i18n-html="uses"></div>
+  </aside>
+
+  <section id="out">
+    <div class="toolbar">
+      <div class="tabs"><button id="tForecast" type="button" class="on" data-i18n="tabForecast"></button><button id="tMap" type="button" data-i18n="tabMap"></button><button id="tTest" type="button" data-i18n="tabTest"></button></div>
+      <div class="actions" id="actions"><button class="ghost" id="csv" type="button" data-i18n="csv"></button><button class="ghost" id="print" type="button" data-i18n="print"></button></div>
+    </div>
+
+    <div class="view" id="viewForecast">
+      <div class="print-only small" id="printHead"></div>
+      <div class="card" id="matchcard"><div class="small">Loading the model…</div></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="recovery" id="recovery"></div>
+      <div class="card">
+        <div class="card-head"><h3 id="speedTitle"></h3><div class="legend" id="speedLegend"></div></div>
+        <svg id="speedChart"></svg>
+        <div class="slider"><button class="play" type="button">▶</button><input type="range" class="hourR" min="0" max="12" value="8"><b class="hourLabel"></b></div>
+        <div class="hint" id="speedHint" data-i18n-html="speedHint"></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><h3 data-i18n="probTitle"></h3><div class="legend" id="probLegend"></div></div>
+          <svg id="probChart"></svg>
+          <div class="hint" data-i18n="probHint"></div>
+        </div>
+        <div class="card"><h3 style="margin-bottom:8px" data-i18n="tableTitle"></h3><table id="tbl"></table></div>
+      </div>
+      <div class="grid2" id="infoGrid">
+        <div class="card small" id="history"></div>
+        <div class="card small" id="works"></div>
+      </div>
+    </div>
+
+    <div class="view" id="viewMap" style="display:none">
+      <div class="card" id="mapHead"></div>
+      <div class="mapgrid">
+        <div class="card">
+          <div class="card-head">
+            <h3 data-i18n="mapTitle"></h3>
+            <div class="seg"><button id="mClass" class="on" type="button" data-i18n="mClass"></button><button id="mDelta" type="button" data-i18n="mDelta"></button></div>
+          </div>
+          <svg id="map"></svg>
+          <div class="legend" id="mapLegend" style="margin-top:8px"></div>
+          <div class="slider"><button class="play" type="button">▶</button><input type="range" class="hourR" min="0" max="12" value="8"><b class="hourLabel"></b></div>
+          <div class="hint" id="mapHint" data-i18n="mapHint"></div>
+        </div>
+        <div class="mapside">
+          <div class="card hoursum" id="hourSum"></div>
+          <div class="card">
+            <div class="card-head"><h3 id="cellTitle"></h3></div>
+            <svg id="cellChart"></svg>
+            <div class="legend" id="cellLegend" style="margin-top:6px"></div>
+          </div>
+          <div class="card small" id="cellListCard"><h3 style="margin-bottom:6px" id="cellListTitle"></h3><div class="scroll" style="max-height:340px"><table id="cellTbl"></table></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="viewTest" style="display:none">
+      <div class="card small" id="testIntro"></div>
+      <div class="kpis" id="testKpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><h3 data-i18n="scatterTitle"></h3></div>
+          <svg id="scatter"></svg>
+          <div class="hint" data-i18n="scatterHint"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3 id="testCurveTitle"></h3><div class="legend" id="testLegend"></div></div>
+          <svg id="testCurve"></svg>
+          <div class="hint" id="testCurveHint"></div>
+        </div>
+      </div>
+      <div class="card"><h3 style="margin-bottom:8px" data-i18n="testListTitle"></h3><div class="scroll"><table id="testTable"></table></div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+// ---------------------------------------------------------------- texts in English and Turkish
+const STR = {
+  en: {
+    title: "Match-day traffic forecast · Istanbul", toDark: "Dark mode", toLight: "Light mode",
+    subtitle: "Long-horizon model trained on IBB hourly traffic around the three big stadiums · COM0411 project",
+    formTitle: "Future match", date: "Date", time: "Kick-off time", stadium: "Stadium (location)", opponent: "Opponent",
+    competition: "Competition", go: "Forecast traffic", going: "Forecasting…",
+    upTitle: "Upcoming matches", upHint: "Real fixtures from tff.org and the UEFA lists. Click one to fill in the form.", upNone: "No scheduled match in the lists.",
+    tabForecast: "Forecast", tabMap: "Map", tabTest: "How did it do? · test season 2024-25", csv: "Download CSV", print: "Print / PDF",
+    comp: { league: "Süper Lig", domestic_cup: "Turkish Cup", european: "European competition" },
+    slot: { afternoon: "afternoon kick-off", early_evening: "early evening kick-off", late_evening: "late evening kick-off" },
+    derby: "Derby", big: "Big match", istanbul: "Istanbul club", holiday: "Public holiday",
+    kickoff: "kick-off", kChange: "Change vs normal day", kAfter: "After the match (+2 … +4 h)", kPeak: "Largest slowdown", kBack: "Back to normal",
+    range: "80 % range", normalDay: "normal day", speed: "speed", insteadOf: "instead of", cellsCong: "cells next to the stadium congested",
+    notBack: "not within 6 h", slowFrom: "slowdown from", noSlow: "no clear slowdown",
+    speedNear: "Average speed next to the stadium (R0 + R1)", speedCell: (g, r) => `Speed in cell ${g} (${r})`,
+    sMatch: "match day (forecast)", sNormal: "normal day (forecast)", sHist: (n) => `earlier matches, same kick-off slot (n = ${n})`,
+    sObs: "observed on this date", sBand: "80 % range (back-test)",
+    speedHint: 'Drag the slider or press play (▶) to move through the hours. The chart is the average of the cells next to the stadium; the <a href="#" data-goto="map">Map</a> tab shows every cell on its own.',
+    mapHint: "Click a cell on the map or in the list to see its hours on the right. Play (▶) runs through the 13 hours. North is up; the bar shows 1 km.",
+    hsTitle: "Selected hour", hsCount: (c, n) => `${c.free} free · ${c.moderate} moderate · ${c.congested} congested (of ${n} cells)`,
+    hsNear: (m, n, d) => `Next to the stadium: <b>${m} km/h</b> · normal day ${n} (${d})`,
+    cellHours: (n) => `Hour by hour: ${n}`, cellList: (c) => `All cells at ${c}, most slowed first`, thCell: "Cell", thPCs: "P(cong.)",
+    dirs: ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"], north: "N", stadiumPin: "stadium",
+    csvColsCells: ["time", "hour_rel", "cell", "ring", "direction", "match_day_kmh", "normal_day_kmh", "change_kmh", "p_congested"],
+    bandMatch: "MATCH", bandAfter: "AFTER THE MATCH",
+    mapTitle: "Cells around the stadium", mClass: "Congestion", mDelta: "Change vs normal day",
+    free: "free", moderate: "moderate", congested: "congested", r0: "R0 · stadium",
+    mapNote: "number = forecast speed · R0 = stadium cell · cell ≈ 0.92 × 0.61 km", slower: "slower", same: "same", faster: "faster",
+    mapNoteD: "number = km/h against a normal day at the same hour", osm: "roads © OpenStreetMap contributors",
+    probTitle: "Congestion class next to the stadium, by hour", normalCong: "normal day: congested",
+    probHint: "Mean predicted probability over the cells next to the stadium (R0 + R1). Congested = speed below half of the cell's free-flow speed.",
+    tableTitle: "Hour by hour", thTime: "Time", thHour: "Hour", thWin: "Window", thMatch: "Match day", thNormal: "Normal day", thChange: "Change", thPC: "P(congested)",
+    win: { pre: "before", during: "match", post: "after" }, tableNote: "km/h, mean of the cells next to the stadium (R0 + R1)",
+    unit: "km/h", h: "h",
+    recovery: (r) => r.none ? `No clear slowdown is expected after this match (less than 1 km/h below a normal day).`
+      : `After the match the slowdown starts at <b>${r.start}</b>, is largest at <b>${r.peak}</b> (${r.peakDelta} km/h against a normal day)` +
+        (r.back ? ` and traffic is <b>back to normal by ${r.back}</b>.` : ` and traffic is <b>not back to normal within 6 hours</b> of kick-off.`) +
+        (r.pre ? ` Before kick-off it is already slower from <b>${r.pre}</b> (road closures).` : ""),
+    warnTested: (n, d, U) => `This date is about <b>${n} months after the last IBB traffic data (${d})</b>. We tested such a gap: trained as if the data ended earlier, the same model missed the speed after the match by <b>${U.post_mae_abs.toFixed(1)} km/h</b> on average and the change against a normal day by <b>${U.post_mae_eff.toFixed(1)} km/h</b> (${U.n_matches} matches, ${U.lo}–${Math.round(U.max_tested)} months ahead). The shaded band shows 80 % of those errors. ${U.beyond ? `Gaps longer than ${Math.round(U.max_tested)} months could not be tested, so the error may be larger here. ` : ""}Changes since January 2025 (new lines, long road works) are not in the traffic data; see the road works at the bottom.`,
+    warnPlain: (n, d) => `This date is about <b>${n} months after the last IBB traffic data (${d})</b>. The forecast repeats the patterns of 2022–2025; changes since then are not in the data.`,
+    observedInfo: (o) => `A real match was played here on this date (vs ${o}). The dark line shows what was observed. This match is part of the training data, so the comparison is in-sample; the out-of-sample check is in the tab “How did it do?”.`,
+    histTitle: "What happened before",
+    histText: (s, n, slot) => `The dashed dark green line is the <b>observed</b> average speed next to ${s} at the ${n} earlier matches with a ${slot} (seasons 2022-23 to 2024-25).`,
+    histOpp: "Earlier home matches against this opponent", thDate: "Date", thKo: "Kick-off", thComp: "Competition", thAfter: "Speed after the match", thVeh: "Vehicles",
+    histNote: "Change against the matched control days (Phase 1 design), cells next to the stadium, +2 … +4 h.", histNone: "No earlier home match against this opponent at this stadium in the data (2022-23 to 2024-25).",
+    worksTitle: (s) => `Road works and closures near ${s} since February 2025`,
+    worksText: (W, d) => `The traffic model has no data after ${d}. The traffic control centre (UYM) announced <b>${W.n}</b> road works or closures within ${W.km} km of the stadium between February 2025 and ${W.last || ""}; <b>${W.n_long}</b> lasted more than a day. Announcements about football matches are not included.`,
+    worksHint: "Longest recent works first, then the latest announcements (original Turkish text). Source: IBB open data, UYM traffic announcements.",
+    wtype: { maintenance: "maintenance", "road construction": "road construction", "utility works": "utility works", "road closure": "road closure", construction: "construction", landscaping: "landscaping", "controlled closure": "controlled closure" },
+    day: (n) => `${n} day${n === 1 ? "" : "s"}`, fromStadium: "km from the stadium",
+    quality: (q, M) => `<b>How good is it?</b> Tested once on the 2024-25 season, which was never used for training decisions:
+      <ul><li>Match hours: macro-F1 <b>${q.scenario_t2.match.toFixed(3)}</b> (usual hour-of-week speed: ${q.profile_t2.match.toFixed(3)}; same model without the fixture: ${q.no_event_t2.match.toFixed(3)})</li>
+      <li>Speed error after the match, next to the stadium: <b>${q.scenario_t1.post_near.toFixed(1)} km/h</b></li>
+      <li>All hours: macro-F1 ${q.scenario_t2.all.toFixed(3)}${q.day_ahead && q.day_ahead.t2 ? ` (day-ahead model that also knows yesterday's traffic: ${q.day_ahead.t2.all.toFixed(3)})` : ""}</li></ul>
+      <p style="margin:8px 0 0">Trained on ${M.train_rows.toLocaleString("en")} cell-hours of ${M.n_cells} cells, Aug 2022 – ${M.data_end}.</p>
+      ${M.horizon ? `<p style="margin:8px 0 0"><b>Gap to the data, tested:</b> trained as if the data ended earlier, the model missed the speed after the match by ${M.horizon.bins.map((b) => `${b.post_mae_abs.toFixed(1)} km/h (${b.lo}–${b.hi === 24 ? Math.round(M.horizon.max_tested) : b.hi} months ahead)`).join(", ")}.</p>` : ""}`,
+    uses: `<b>What the model uses</b><ul><li>Calendar: hour, weekday, month, holidays</li><li>Location: stadium, ring, each cell's free-flow speed</li><li>Each cell's usual speed at that hour of the week</li><li>Fixture: match day, hours to kick-off, competition, kick-off slot, opponent group, derby, capacity</li></ul>
+      <p style="margin:8px 0 0"><b>Not used:</b> recent traffic (it does not exist yet for a future date) and weather (no forecast weeks ahead, and no measurable effect in our tests). The <b>normal day</b> line is the same model with no match.</p>`,
+    testIntro: (S) => `<b>Out-of-sample check.</b> The model below was trained only on the 2022-23 and 2023-24 seasons and never saw the 2024-25 season. For each of the ${S.n} test matches it forecast the speed next to the stadium hour by hour, before and after kick-off; here the forecasts are put next to what was observed: the match day itself and the mean of its control days (Phase 1 design).`,
+    tN: "Test matches", tMae: "Speed error after the match", tMaeD: "Error of the change", tR: "Correlation of the change",
+    tNs: "2024-25, never seen in training", tMaes: "mean |forecast − observed|, +2 … +4 h", tMaeDs: "vs observed change against control days", tRs: (p) => `slowdown called right in ${p} % of matches`,
+    scatterTitle: "Change after the match: forecast vs observed", scatterHint: "One dot per test match (km/h, +2 … +4 h, cells next to the stadium). Dots on the diagonal are perfect forecasts. Click a dot to see the match.",
+    xLab: "observed change vs control days", yLab: "forecast change vs normal day",
+    testCurveTitle: (m) => `${m}`, oMatch: "observed: match day", oCtrl: "observed: control days", fMatch: "forecast: match day", fNormal: "forecast: normal day",
+    testCurveHint: "Forecast made by a model that had not seen this season.",
+    testListTitle: "All test matches", thMatchName: "Match", thFc: "Forecast change", thOc: "Observed change", thErr: "Speed error",
+    lastData: "last traffic data",
+    csvCols: ["time", "hour_rel", "window", "match_day_kmh", "normal_day_kmh", "change_kmh", "range80_low_kmh", "range80_high_kmh", "p_congested"],
+  },
+  tr: {
+    title: "Maç günü trafik tahmini · İstanbul", toDark: "Koyu mod", toLight: "Açık mod",
+    subtitle: "Üç büyük stadyumun çevresindeki İBB saatlik trafik verisiyle eğitilmiş uzun vadeli model · COM0411 projesi",
+    formTitle: "Gelecekteki maç", date: "Tarih", time: "Başlama saati", stadium: "Stadyum (konum)", opponent: "Rakip",
+    competition: "Organizasyon", go: "Trafiği tahmin et", going: "Hesaplanıyor…",
+    upTitle: "Yaklaşan maçlar", upHint: "tff.org ve UEFA listelerinden gerçek fikstür. Formu doldurmak için birine tıklayın.", upNone: "Listelerde planlanmış maç yok.",
+    tabForecast: "Tahmin", tabMap: "Harita", tabTest: "Ne kadar tuttu? · 2024-25 test sezonu", csv: "CSV indir", print: "Yazdır / PDF",
+    comp: { league: "Süper Lig", domestic_cup: "Türkiye Kupası", european: "Avrupa kupası" },
+    slot: { afternoon: "öğleden sonra başlama", early_evening: "akşam erken başlama", late_evening: "akşam geç başlama" },
+    derby: "Derbi", big: "Büyük maç", istanbul: "İstanbul takımı", holiday: "Resmî tatil",
+    kickoff: "başlama", kChange: "Normal güne göre fark", kAfter: "Maç sonrası (+2 … +4 sa)", kPeak: "En büyük yavaşlama", kBack: "Normale dönüş",
+    range: "%80 aralık", normalDay: "normal gün", speed: "hız", insteadOf: "yerine", cellsCong: "stadyum yanındaki hücre tıkalı",
+    notBack: "6 saat içinde değil", slowFrom: "yavaşlama başlangıcı", noSlow: "belirgin yavaşlama yok",
+    speedNear: "Stadyumun yanındaki ortalama hız (R0 + R1)", speedCell: (g, r) => `${g} hücresinde hız (${r})`,
+    sMatch: "maç günü (tahmin)", sNormal: "normal gün (tahmin)", sHist: (n) => `önceki maçlar, aynı başlama dilimi (n = ${n})`,
+    sObs: "bu tarihte gözlenen", sBand: "%80 aralık (geriye dönük test)",
+    speedHint: 'Saatler arasında gezmek için kaydırıcıyı sürükleyin ya da oynat (▶) düğmesine basın. Grafik, stadyumun hemen yanındaki hücrelerin ortalamasıdır; her hücreyi ayrı görmek için <a href="#" data-goto="map">Harita</a> sekmesine geçin.',
+    mapHint: "Saatlerini sağda görmek için haritada ya da listede bir hücreye tıklayın. Oynat (▶) 13 saati sırayla gösterir. Kuzey yukarıda; çubuk 1 km'dir.",
+    hsTitle: "Seçili saat", hsCount: (c, n) => `${c.free} serbest · ${c.moderate} orta · ${c.congested} tıkalı (toplam ${n} hücre)`,
+    hsNear: (m, n, d) => `Stadyumun yanında: <b>${m} km/s</b> · normal gün ${n} (${d})`,
+    cellHours: (n) => `Saat saat: ${n}`, cellList: (c) => `Saat ${c} için tüm hücreler, en çok yavaşlayan üstte`, thCell: "Hücre", thPCs: "P(tıkalı)",
+    dirs: ["kuzey", "kuzeydoğu", "doğu", "güneydoğu", "güney", "güneybatı", "batı", "kuzeybatı"], north: "K", stadiumPin: "stadyum",
+    csvColsCells: ["saat", "baslamaya_gore", "hucre", "halka", "yon", "mac_gunu_kms", "normal_gun_kms", "fark_kms", "p_tikali"],
+    bandMatch: "MAÇ", bandAfter: "MAÇ SONRASI",
+    mapTitle: "Stadyum çevresindeki hücreler", mClass: "Tıkanıklık", mDelta: "Normal güne göre fark",
+    free: "serbest", moderate: "orta", congested: "tıkalı", r0: "R0 · stadyum",
+    mapNote: "sayı = tahmini hız · R0 = stadyum hücresi · hücre ≈ 0,92 × 0,61 km", slower: "daha yavaş", same: "aynı", faster: "daha hızlı",
+    mapNoteD: "sayı = aynı saatte normal güne göre km/s", osm: "yollar © OpenStreetMap katkıcıları",
+    probTitle: "Stadyumun yanında saat saat tıkanıklık sınıfı", normalCong: "normal gün: tıkalı",
+    probHint: "Stadyumun yanındaki hücrelerin (R0 + R1) ortalama tahmin olasılığı. Tıkalı = hız, hücrenin serbest akış hızının yarısından düşük.",
+    tableTitle: "Saat saat", thTime: "Saat", thHour: "Başlamaya göre", thWin: "Pencere", thMatch: "Maç günü", thNormal: "Normal gün", thChange: "Fark", thPC: "P(tıkalı)",
+    win: { pre: "öncesi", during: "maç", post: "sonrası" }, tableNote: "km/s, stadyumun yanındaki hücrelerin (R0 + R1) ortalaması",
+    unit: "km/s", h: "sa",
+    recovery: (r) => r.none ? `Bu maçtan sonra belirgin bir yavaşlama beklenmiyor (normal güne göre 1 km/s'den az).`
+      : `Maçtan sonra yavaşlama saat <b>${r.start}</b> itibarıyla başlıyor, en büyük yavaşlama saat <b>${r.peak}</b> sularında (normal güne göre ${r.peakDelta} km/s)` +
+        (r.back ? `; trafik saat <b>${r.back}</b> itibarıyla <b>normale dönüyor</b>.` : `; trafik başlamadan sonraki <b>6 saat içinde normale dönmüyor</b>.`) +
+        (r.pre ? ` Başlamadan önce de saat <b>${r.pre}</b> itibarıyla daha yavaş (yol kapatmaları).` : ""),
+    warnTested: (n, d, U) => `Bu tarih, son İBB trafik verisinden (${d}) <b>yaklaşık ${n} ay sonra</b>. Böyle bir boşluğu test ettik: verinin daha erken bittiğini varsayarak eğitilen aynı model, maç sonrası hızı ortalama <b>${U.post_mae_abs.toFixed(1).replace(".", ",")} km/s</b>, normal güne göre farkı <b>${U.post_mae_eff.toFixed(1).replace(".", ",")} km/s</b> kaçırdı (${U.n_matches} maç, ${U.lo}–${Math.round(U.max_tested)} ay sonrası). Gölgeli bant bu hataların %80'ini gösteriyor. ${U.beyond ? `${Math.round(U.max_tested)} aydan uzun boşluklar test edilemedi; burada hata daha büyük olabilir. ` : ""}Ocak 2025'ten sonraki değişiklikler (yeni hatlar, uzun yol çalışmaları) trafik verisinde yok; en alttaki yol çalışmalarına bakın.`,
+    warnPlain: (n, d) => `Bu tarih, son İBB trafik verisinden (${d}) <b>yaklaşık ${n} ay sonra</b>. Tahmin 2022–2025 örüntülerini tekrarlıyor; sonraki değişiklikler veride yok.`,
+    observedInfo: (o) => `Bu tarihte burada gerçekten bir maç oynandı (${o} ile). Koyu çizgi gözlenen değeri gösteriyor. Bu maç eğitim verisinde olduğu için karşılaştırma örneklem içi; örneklem dışı kontrol "Ne kadar tuttu?" sekmesinde.`,
+    histTitle: "Daha önce ne oldu?",
+    histText: (s, n, slot) => `Kesikli koyu yeşil çizgi, ${s} yanında aynı dilimde (${slot}) oynanmış ${n} eski maçta <b>gözlenen</b> ortalama hız (2022-23 – 2024-25).`,
+    histOpp: "Bu rakiple daha önce oynanan iç saha maçları", thDate: "Tarih", thKo: "Başlama", thComp: "Organizasyon", thAfter: "Maç sonrası hız", thVeh: "Araç",
+    histNote: "Eşleştirilmiş kontrol günlerine göre fark (1. faz tasarımı), stadyumun yanındaki hücreler, +2 … +4 sa.", histNone: "Veride bu stadyumda bu rakiple oynanmış iç saha maçı yok (2022-23 – 2024-25).",
+    worksTitle: (s) => `${s} çevresinde Şubat 2025'ten bu yana yol çalışmaları ve kapatmalar`,
+    worksText: (W, d) => `Trafik modelinin ${d} sonrasına verisi yok. Ulaşım Yönetim Merkezi (UYM), Şubat 2025 ile ${W.last || ""} arasında stadyumun ${String(W.km).replace(".", ",")} km çevresinde <b>${W.n}</b> yol çalışması ya da kapatma duyurdu; <b>${W.n_long}</b> tanesi bir günden uzun sürdü. Maçlarla ilgili duyurular dahil değil.`,
+    worksHint: "Önce son dönemin en uzun çalışmaları, sonra en yeni duyurular (orijinal metin). Kaynak: İBB açık veri, UYM trafik duyuruları.",
+    wtype: { maintenance: "bakım-onarım", "road construction": "yol yapımı", "utility works": "altyapı", "road closure": "yol kapatma", construction: "imalat", landscaping: "çevre düzenlemesi", "controlled closure": "kontrollü kapama" },
+    day: (n) => `${n} gün`, fromStadium: "km uzakta",
+    quality: (q, M) => `<b>Ne kadar iyi?</b> Eğitim kararlarında hiç kullanılmamış 2024-25 sezonunda bir kez test edildi:
+      <ul><li>Maç saatleri: macro-F1 <b>${q.scenario_t2.match.toFixed(3).replace(".", ",")}</b> (olağan haftalık saat hızı: ${q.profile_t2.match.toFixed(3).replace(".", ",")}; fikstürsüz aynı model: ${q.no_event_t2.match.toFixed(3).replace(".", ",")})</li>
+      <li>Stadyum yanında maç sonrası hız hatası: <b>${q.scenario_t1.post_near.toFixed(1).replace(".", ",")} km/s</b></li>
+      <li>Tüm saatler: macro-F1 ${q.scenario_t2.all.toFixed(3).replace(".", ",")}${q.day_ahead && q.day_ahead.t2 ? ` (dünkü trafiği de bilen günlük model: ${q.day_ahead.t2.all.toFixed(3).replace(".", ",")})` : ""}</li></ul>
+      <p style="margin:8px 0 0">${M.n_cells} hücrenin ${M.train_rows.toLocaleString("tr")} hücre-saatiyle eğitildi, Ağustos 2022 – ${M.data_end}.</p>
+      ${M.horizon ? `<p style="margin:8px 0 0"><b>Veriyle arası test edildi:</b> verinin daha erken bittiği varsayılarak eğitilen model maç sonrası hızı ${M.horizon.bins.map((b) => `${b.post_mae_abs.toFixed(1).replace(".", ",")} km/s (${b.lo}–${b.hi === 24 ? Math.round(M.horizon.max_tested) : b.hi} ay sonrası)`).join(", ")} kaçırdı.</p>` : ""}`,
+    uses: `<b>Model neyi kullanıyor?</b><ul><li>Takvim: saat, haftanın günü, ay, tatiller</li><li>Konum: stadyum, halka, her hücrenin serbest akış hızı</li><li>Her hücrenin o haftalık saatteki olağan hızı</li><li>Fikstür: maç günü, başlamaya kalan saat, organizasyon, başlama dilimi, rakip grubu, derbi, kapasite</li></ul>
+      <p style="margin:8px 0 0"><b>Kullanılmayanlar:</b> yakın geçmişin trafiği (gelecek bir tarih için henüz yok) ve hava (haftalar önceden tahmini yok, testlerimizde de ölçülebilir etkisi yok). <b>Normal gün</b> çizgisi, maç olmadan aynı model.</p>`,
+    testIntro: (S) => `<b>Örneklem dışı kontrol.</b> Aşağıdaki model yalnızca 2022-23 ve 2023-24 sezonlarıyla eğitildi; 2024-25 sezonunu hiç görmedi. ${S.n} test maçının her biri için stadyum yanındaki hızı başlamadan önce ve sonra saat saat tahmin etti. Burada tahminler gözlenenle yan yana: maç günü ve onun kontrol günlerinin ortalaması (1. faz tasarımı).`,
+    tN: "Test maçı", tMae: "Maç sonrası hız hatası", tMaeD: "Fark hatası", tR: "Farkın korelasyonu",
+    tNs: "2024-25, eğitimde hiç görülmedi", tMaes: "ortalama |tahmin − gözlenen|, +2 … +4 sa", tMaeDs: "kontrol günlerine göre gözlenen farka karşı", tRs: (p) => `maçların %${p}'inde yavaşlama doğru bilindi`,
+    scatterTitle: "Maç sonrası fark: tahmin ve gözlenen", scatterHint: "Her nokta bir test maçı (km/s, +2 … +4 sa, stadyumun yanındaki hücreler). Köşegen üzerindeki noktalar kusursuz tahmindir. Maçı görmek için noktaya tıklayın.",
+    xLab: "kontrol günlerine göre gözlenen fark", yLab: "normal güne göre tahmin edilen fark",
+    testCurveTitle: (m) => `${m}`, oMatch: "gözlenen: maç günü", oCtrl: "gözlenen: kontrol günleri", fMatch: "tahmin: maç günü", fNormal: "tahmin: normal gün",
+    testCurveHint: "Bu sezonu görmemiş bir modelin tahmini.",
+    testListTitle: "Bütün test maçları", thMatchName: "Maç", thFc: "Tahmin edilen fark", thOc: "Gözlenen fark", thErr: "Hız hatası",
+    lastData: "son trafik verisi",
+    csvCols: ["saat", "baslamaya_gore", "pencere", "mac_gunu_kms", "normal_gun_kms", "fark_kms", "aralik80_alt_kms", "aralik80_ust_kms", "p_tikali"],
+  },
+};
+let LANG = localStorage.getItem("panelLang") || "en";
+const t = (k) => STR[LANG][k];
+
+// ---------------------------------------------------------------- helpers
+const $ = (id) => document.getElementById(id);
+let COL = {};
+const TOKENS = { match: "c-match", normal: "c-normal", hist: "c-hist", obs: "c-obs", free: "c-free", moderate: "c-moderate", congested: "c-congested",
+  grid: "c-grid", text: "c-text", text2: "c-text2", bandMatch: "c-band-match", bandMatchText: "c-band-match-text", bandAfter: "c-band-after",
+  bandAfterText: "c-band-after-text", mapBg: "c-map-bg", road: "c-road", roadCase: "c-road-case", label: "c-label", labelHalo: "c-label-halo",
+  cellText: "c-cell-text", cellHalo: "c-cell-halo", cellEdge: "c-cell-edge", neutral: "c-neutral", slower: "c-slower", faster: "c-faster", dotEdge: "c-dot-edge" };
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  COL = Object.fromEntries(Object.entries(TOKENS).map(([k, v]) => [k, cs.getPropertyValue("--" + v).trim()]));
+}
+// ---------------------------------------------------------------- light / dark
+const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2z"/></svg>';
+const sysDark = window.matchMedia("(prefers-color-scheme: dark)");
+let THEME = localStorage.getItem("panelTheme") || (sysDark.matches ? "dark" : "light");
+function applyTheme(redraw = true) {
+  document.documentElement.dataset.theme = THEME;
+  const btn = document.getElementById("theme");
+  if (btn) { btn.innerHTML = THEME === "dark" ? SUN : MOON; btn.title = btn.ariaLabel = THEME === "dark" ? t("toLight") : t("toDark"); }
+  readColors();
+  if (redraw && R) renderAll();
+  if (redraw && META && META.test_eval && view === "test") renderTest();
+}
+document.documentElement.dataset.theme = THEME;
+function followSystem() {          // no choice stored: follow the system appearance (also re-checked when the window regains focus)
+  if (localStorage.getItem("panelTheme")) return;
+  const want = sysDark.matches ? "dark" : "light";
+  if (want !== THEME) { THEME = want; applyTheme(); }
+}
+sysDark.addEventListener("change", followSystem);
+window.addEventListener("focus", followSystem);
+const DLON = 360 / 2 ** 15, DLAT = 180 / 2 ** 15;            // size of a geohash-6 cell in degrees
+let META = null, R = null, hourIdx = 8, mapMode = "class", selCell = null, timer = null, view = "forecast", testSel = null, upSel = null;
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const dec = (s) => (LANG === "tr" ? s.replace(".", ",") : s);
+const f1 = (v) => (v == null ? "–" : dec(v.toFixed(1)));
+const sgn = (v, d = 1) => (v == null ? "–" : (v > 0 ? "+" : v < 0 ? "−" : "") + dec(Math.abs(v).toFixed(d)));
+const hLabel = (h) => (h === 0 ? "KO" : h > 0 ? "+" + h : "−" + -h);
+const win = (h) => (h >= -3 && h <= -1 ? "pre" : h >= 0 && h <= 1 ? "during" : h >= 2 && h <= 4 ? "post" : "");
+const titleCase = (s) => String(s).toLocaleLowerCase("tr").replace(/(^|\s|-|\.)(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase("tr"))
+  .replace(/\b(Fk|Sk|Jk|Afc|Fc)\b/g, (w) => w.toUpperCase());
+const stadByKey = (k) => META.stadiums.find((s) => s.key === k);
+const stad = () => stadByKey(R ? R.input.stadium : $("stadium").value);
+const shortName = (s) => s.name.split(" (")[0];
+const fmtDate = (iso, opts) => new Date(iso + "T12:00:00").toLocaleDateString(LANG === "tr" ? "tr-TR" : "en-GB", opts);
+
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, s, a = {}) { const e = el("text", { x, y, "font-size": 12, fill: COL.text, ...a }, parent); e.textContent = s; return e; }
+
+// ---------------------------------------------------------------- language
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.title = t("title");
+  document.querySelectorAll("[data-i18n]").forEach((e) => { e.textContent = t(e.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach((e) => { e.innerHTML = t(e.dataset.i18nHtml); });
+  $("lEN").classList.toggle("on", LANG === "en"); $("lTR").classList.toggle("on", LANG === "tr");
+  const tb = $("theme"); if (tb) tb.title = tb.ariaLabel = THEME === "dark" ? t("toLight") : t("toDark");
+  if (!META) return;
+  const cur = $("competition").value || "league";
+  $("competition").innerHTML = Object.keys(META.competitions).map((k) => `<option value="${k}">${esc(t("comp")[k])}</option>`).join("");
+  $("competition").value = cur;
+  renderQuality(); renderUpcoming();
+  if (R) renderAll();
+  if (META.test_eval) renderTest();
+}
+function setLang(l) { LANG = l; localStorage.setItem("panelLang", l); applyLang(); }
+
+// ---------------------------------------------------------------- start
+async function init() {
+  applyTheme(false);
+  applyLang();
+  try { META = await (await fetch("/api/meta")).json(); }
+  catch (e) { $("matchcard").innerHTML = '<div class="err">The panel server is not running. Start it with: python panel.py</div>'; return; }
+  for (const s of META.stadiums) {
+    const o = document.createElement("option"); o.value = s.key; o.textContent = `${shortName(s)} · ${s.club}`; $("stadium").appendChild(o);
+  }
+  fillOpponents();
+  $("stadium").addEventListener("change", () => {
+    fillOpponents();
+    const home = stadByKey($("stadium").value).club;
+    if ($("opponent").value.toLocaleLowerCase("tr").startsWith(home.toLocaleLowerCase("tr").slice(0, 5))) $("opponent").value = "";
+  });
+  $("f").addEventListener("submit", (e) => { upSel = null; renderUpcoming(); run(e); });
+  $("mClass").onclick = () => { mapMode = "class"; $("mClass").classList.add("on"); $("mDelta").classList.remove("on"); renderMap(); };
+  $("mDelta").onclick = () => { mapMode = "delta"; $("mDelta").classList.add("on"); $("mClass").classList.remove("on"); renderMap(); };
+  document.querySelectorAll(".hourR").forEach((e) => { e.oninput = () => { hourIdx = +e.value; renderHourViews(); }; });
+  document.querySelectorAll(".play").forEach((b) => { b.onclick = togglePlay; });
+  document.addEventListener("click", (e) => {              // links such as "Map tab" inside the hints
+    const a = e.target.closest("[data-goto]");
+    if (a) { e.preventDefault(); setView(a.dataset.goto); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  });
+  $("lEN").onclick = () => setLang("en"); $("lTR").onclick = () => setLang("tr");
+  $("theme").onclick = () => { THEME = THEME === "dark" ? "light" : "dark"; localStorage.setItem("panelTheme", THEME); applyTheme(); };
+  $("tForecast").onclick = () => setView("forecast"); $("tMap").onclick = () => setView("map"); $("tTest").onclick = () => setView("test");
+  $("csv").onclick = downloadCsv; $("print").onclick = () => window.print();
+  applyLang();
+  run();
+}
+function setView(v) {
+  view = v;
+  for (const [id, key] of [["tForecast", "forecast"], ["tMap", "map"], ["tTest", "test"]]) {
+    $(id).classList.toggle("on", v === key);
+    $(id.replace("t", "view")).style.display = v === key ? "" : "none";
+  }
+  $("actions").style.visibility = v === "test" ? "hidden" : "visible";
+  if (v === "test") renderTest();
+}
+function fillOpponents() {
+  const s = stadByKey($("stadium").value), dl = $("opps"); dl.innerHTML = "";
+  const names = [...META.big_clubs.filter((c) => c !== s.club), ...s.opponents.map(titleCase)];
+  for (const n of [...new Set(names)]) { const o = document.createElement("option"); o.value = n; dl.appendChild(o); }
+}
+function renderQuality() { $("quality").innerHTML = t("quality")(META.quality, META); }
+
+function renderUpcoming() {
+  const box = $("upcoming"), U = META.upcoming || [];
+  if (!U.length) { box.innerHTML = `<div class="hint">${esc(t("upNone"))}</div>`; return; }
+  box.innerHTML = U.map((u, i) => {
+    const s = stadByKey(u.stadium);
+    return `<button type="button" data-i="${i}" class="${upSel === i ? "on" : ""}"><span class="when">${esc(fmtDate(u.date, { weekday: "short", day: "numeric", month: "short" }))} · ${esc(u.time)}</span><br>${esc(u.club)} – ${esc(titleCase(u.opponent))}<br><span class="meta">${esc(shortName(s))} · ${esc(t("comp")[u.competition])}</span></button>`;
+  }).join("");
+  box.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    const u = U[+b.dataset.i]; upSel = +b.dataset.i;
+    $("date").value = u.date; $("time").value = u.time; $("stadium").value = u.stadium; fillOpponents();
+    $("opponent").value = titleCase(u.opponent); $("competition").value = u.competition;
+    renderUpcoming(); if (view === "test") setView("forecast"); run();
+  }));
+}
+
+async function run(e) {
+  if (e) e.preventDefault();
+  stopPlay();
+  $("err").textContent = ""; $("go").disabled = true; $("go").textContent = t("going");
+  const p = new URLSearchParams({ date: $("date").value, time: $("time").value, stadium: $("stadium").value, opponent: $("opponent").value, competition: $("competition").value });
+  try {
+    const res = await fetch("/api/predict?" + p.toString()), data = await res.json();
+    if (!res.ok) throw new Error(data.error || "error");
+    R = data; hourIdx = R.hours.indexOf(R.summary.peak_h);
+    selCell = Object.keys(R.cells).find((g) => R.cells[g].ring === "R0") || Object.keys(R.cells)[0];
+    renderAll();
+  } catch (err) { $("err").textContent = err.message; }
+  finally { $("go").disabled = false; $("go").textContent = t("go"); }
+}
+
+function renderAll() {
+  renderMatch(); renderKpis(); renderRecovery(); renderHistory(); renderWorks(); renderPrintHead(); renderMapHead();
+  renderHourViews();
+}
+function renderHourViews() { syncHour(); renderSpeed(); renderProb(); renderTable(); renderMap(); renderHourSum(); renderCellChart(); renderCellTable(); }
+function syncHour() {                    // both sliders (forecast and map tab) show the same hour
+  document.querySelectorAll(".hourR").forEach((e) => { e.value = hourIdx; });
+  document.querySelectorAll(".hourLabel").forEach((e) => { e.textContent = `${R.clock[hourIdx]} (${hLabel(R.hours[hourIdx])} ${t("h")})`; });
+}
+
+// ---------------------------------------------------------------- forecast tab
+function recovery() {
+  const d = R.near.match.speed.map((v, i) => v - R.near.normal.speed[i]);
+  const TH = -1.0, H = R.hours;
+  const after = H.map((h, i) => i).filter((i) => H[i] >= 1);
+  const start = after.find((i) => d[i] <= TH);
+  const pre = H.map((h, i) => i).filter((i) => H[i] >= -3 && H[i] <= -1).find((i) => d[i] <= TH);
+  if (start == null) return { none: true, pre: pre != null ? R.clock[pre] : null };
+  const peak = after.reduce((a, i) => (d[i] < d[a] ? i : a), after[0]);
+  const back = after.find((i) => i > peak && after.filter((j) => j >= i).every((j) => d[j] > TH));
+  return { start: R.clock[start], peak: R.clock[peak], peakDelta: sgn(d[peak]), back: back != null ? R.clock[back] : null,
+           backIdx: back, startIdx: start, pre: pre != null ? R.clock[pre] : null };
+}
+
+function renderMatch() {
+  const s = stad(), m = R.match, i = R.input;
+  const dateTxt = fmtDate(i.date, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const tags = [t("comp")[i.competition], t("slot")[m.kickoff_slot]];
+  const hot = [];
+  if (m.is_derby) hot.push(t("derby")); else if (m.is_big_match) hot.push(t("big"));
+  if (m.opp_group === "istanbul") tags.push(t("istanbul"));
+  if (m.holiday) hot.push(t("holiday"));
+  let html = `<div class="matchline"><div class="title">${esc(s.club)} – ${esc(titleCase(i.opponent))}</div>
+    <div class="sub">${esc(dateTxt)} · ${esc(t("kickoff"))} ${esc(i.time)} · ${esc(s.name)}, ${esc(s.district)}</div>
+    <div class="tags">${hot.map((x) => `<span class="tag hot">${esc(x)}</span>`).join("")}${tags.map((x) => `<span class="tag">${esc(x)}</span>`).join("")}</div></div>`;
+  if (R.months_after_data > 0) html += `<div class="warn">${R.uncertainty ? t("warnTested")(R.months_after_data, META.data_end, R.uncertainty) : t("warnPlain")(R.months_after_data, META.data_end)}</div>`;
+  if (R.history.observed) html += `<div class="info">${t("observedInfo")(esc(titleCase(R.history.observed.opponent)))}</div>`;
+  $("matchcard").innerHTML = html;
+}
+function nearCount() { return Object.values(R.cells).filter((c) => c.ring !== "R2").length; }
+
+function renderKpis() {
+  const s = R.summary, U = R.uncertainty, r = recovery(), u = t("unit");
+  const tiles = [
+    [t("kChange"), `${sgn(s.post_delta)} ${u}`, U ? `${t("range")} ${sgn(U.post_delta_range[0])} … ${sgn(U.post_delta_range[1])} ${u} · ${sgn(s.post_pct)} % ${t("speed")}` : `${sgn(s.post_pct)} % ${t("speed")}`, s.post_delta < -1 ? COL.match : null],
+    [t("kAfter"), `${f1(s.post_speed_match)} ${u}`, U ? `${t("range")} ${f1(U.post_speed_range[0])}–${f1(U.post_speed_range[1])} · ${t("normalDay")} ${f1(s.post_speed_normal)}` : `${t("normalDay")}: ${f1(s.post_speed_normal)} ${u}`, null],
+    [t("kPeak"), s.peak_clock, `${f1(s.peak_speed)} ${t("insteadOf")} ${f1(s.peak_normal)} ${u} · ${Math.round(s.peak_share_congested * nearCount())}/${nearCount()} ${t("cellsCong")}`, null],
+    [t("kBack"), r.none ? "–" : r.back || "> " + R.clock[R.clock.length - 1], r.none ? t("noSlow") : r.back ? `${t("slowFrom")} ${r.start}` : t("notBack"), null],
+  ];
+  $("kpis").innerHTML = tiles.map(([k, v, sub, c]) => `<div class="card kpi"><div class="k">${esc(k)}</div><div class="v" style="${c ? `color:${c}` : ""}">${esc(v)}</div><div class="s">${esc(sub)}</div></div>`).join("");
+}
+function renderRecovery() { $("recovery").innerHTML = t("recovery")(recovery()); }
+
+function axes(svg, W, H, m, ymin, ymax, step, pct = false) {
+  const y = (v) => m.t + ((ymax - v) * (H - m.t - m.b)) / (ymax - ymin);
+  for (let v = ymin; v <= ymax + 1e-9; v += step) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: COL.grid }, svg);
+    txt(svg, m.l - 8, y(v) + 4, pct ? Math.round(v * 100) + "%" : v, { "text-anchor": "end" });
+  }
+  return y;
+}
+function bands(svg, x, m, H, hours) {
+  const half = (x(1) - x(0)) / 2;
+  const span = (a, b, fill, label, color) => {
+    const i0 = hours.indexOf(a), i1 = hours.indexOf(b);
+    el("rect", { x: x(i0) - half, y: m.t, width: x(i1) - x(i0) + 2 * half, height: H - m.t - m.b, fill }, svg);
+    txt(svg, (x(i0) + x(i1)) / 2, m.t + 13, label, { "text-anchor": "middle", fill: color, "font-weight": 700, "font-size": 11 });
+  };
+  span(0, 1, COL.bandMatch, t("bandMatch"), COL.bandMatchText);
+  span(2, 4, COL.bandAfter, t("bandAfter"), COL.bandAfterText);
+}
+function xLabels(svg, x, H, m, hours, clock, sel) {
+  hours.forEach((h, i) => {
+    const on = i === sel;
+    if (clock) txt(svg, x(i), H - m.b + 17, clock[i], { "text-anchor": "middle", fill: on ? COL.obs : COL.text, "font-weight": on ? 700 : 400 });
+    txt(svg, x(i), H - m.b + (clock ? 31 : 17), hLabel(h), { "text-anchor": "middle", "font-size": 10.5, fill: COL.text2 });
+  });
+}
+function path(svg, vals, x, y, a) {
+  let d = "", pen = false;
+  vals.forEach((v, i) => { if (v == null) { pen = false; return; } d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); pen = true; });
+  if (d) el("path", { d, fill: "none", "stroke-linejoin": "round", "stroke-linecap": "round", ...a }, svg);
+}
+function lineChart(svg, opt) {
+  svg.innerHTML = "";
+  const W = opt.W || 900, H = opt.H || 320, m = { l: 46, r: 16, t: 22, b: opt.clock ? 46 : 32 };
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const all = opt.series.flatMap((s) => s.v).concat(opt.band ? opt.band[0].concat(opt.band[1]) : []).filter((v) => v != null);
+  const ymin = Math.max(0, Math.floor((Math.min(...all) - 3) / 5) * 5), ymax = Math.ceil((Math.max(...all) + 3) / 5) * 5;
+  const n = opt.hours.length, x = (i) => m.l + (i * (W - m.l - m.r)) / (n - 1);
+  bands(svg, x, m, H, opt.hours);
+  const y = axes(svg, W, H, m, ymin, ymax, 5);
+  txt(svg, 6, m.t - 8, t("unit"), { "font-size": 11 });
+  if (opt.sel != null) el("line", { x1: x(opt.sel), x2: x(opt.sel), y1: m.t, y2: H - m.b, stroke: COL.obs, "stroke-width": 1, "stroke-dasharray": "3 3" }, svg);
+  if (opt.band) {
+    const pts = opt.band[1].map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).concat(opt.band[0].map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).reverse());
+    el("polygon", { points: pts.join(" "), fill: COL.match, opacity: 0.14 }, svg);
+  }
+  for (const s of opt.series) {
+    path(svg, s.v, x, y, { stroke: s.color, "stroke-width": s.w, "stroke-dasharray": s.dash || "none" });
+    if (s.dots) s.v.forEach((v, i) => v != null && el("circle", { cx: x(i), cy: y(v), r: i === opt.sel ? 5 : 3.2, fill: s.color }, svg));
+  }
+  if (opt.mark != null) {
+    el("line", { x1: x(opt.mark), x2: x(opt.mark), y1: m.t, y2: H - m.b, stroke: COL.hist, "stroke-width": 1.5 }, svg);
+    txt(svg, x(opt.mark) + 4, H - m.b - 6, opt.markLabel, { "font-size": 11, "font-weight": 700, fill: COL.hist });
+  }
+  xLabels(svg, x, H, m, opt.hours, opt.clock, opt.sel);
+}
+
+function renderSpeed() {
+  const U = R.uncertainty;
+  $("speedTitle").textContent = t("speedNear");
+  const series = [{ name: t("sNormal"), v: R.near.normal.speed, color: COL.normal, w: 3 },
+                  { name: t("sHist")(R.history.slot_n), v: R.history.slot_match, color: COL.hist, w: 2, dash: "6 5" },
+                  { name: t("sMatch"), v: R.near.match.speed, color: COL.match, w: 3.5, dots: true }];
+  if (R.history.observed) series.push({ name: t("sObs"), v: R.history.observed.speed, color: COL.obs, w: 2.5 });
+  const r = recovery();
+  lineChart($("speedChart"), { hours: R.hours, clock: R.clock, series, sel: hourIdx, band: U ? [U.band_lo, U.band_hi] : null,
+    mark: r.back ? r.backIdx : null, markLabel: r.back ? `${t("kBack")} ${r.back}` : "" });
+  $("speedLegend").innerHTML = series.slice().reverse().map((s) => `<span><i class="${s.dash ? "dash" : ""}" style="background:${s.dash ? "transparent" : s.color}"></i>${esc(s.name)}</span>`).join("")
+    + (U ? `<span><i class="band"></i>${esc(t("sBand"))}</span>` : "");
+}
+
+function renderProb() {
+  const svg = $("probChart"); svg.innerHTML = "";
+  const W = 560, H = 300, m = { l: 42, r: 10, t: 22, b: 46 }; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const n = R.hours.length, nm = R.near.match;
+  const x0 = (i) => m.l + ((i + 0.5) * (W - m.l - m.r)) / n, bw = ((W - m.l - m.r) / n) * 0.72;
+  const y = (v) => m.t + (1 - v) * (H - m.t - m.b);
+  for (let v = 0; v <= 1.0001; v += 0.25) { el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: COL.grid }, svg); txt(svg, m.l - 6, y(v) + 4, Math.round(v * 100) + "%", { "text-anchor": "end" }); }
+  R.hours.forEach((h, i) => {
+    let base = 0;
+    for (const [k, c] of [["p_congested", COL.congested], ["p_moderate", COL.moderate], ["p_free", COL.free]]) {
+      const v = nm[k][i];
+      el("rect", { x: x0(i) - bw / 2, y: y(base + v), width: bw, height: y(base) - y(base + v), fill: c, opacity: i === hourIdx ? 1 : 0.82 }, svg);
+      base += v;
+    }
+    const on = i === hourIdx;
+    txt(svg, x0(i), H - m.b + 17, R.clock[i], { "text-anchor": "middle", "font-size": 11, fill: on ? COL.obs : COL.text, "font-weight": on ? 700 : 400 });
+    txt(svg, x0(i), H - m.b + 31, hLabel(h), { "text-anchor": "middle", "font-size": 10, fill: COL.text2 });
+  });
+  path(svg, R.near.normal.p_congested, x0, y, { stroke: COL.obs, "stroke-width": 2, "stroke-dasharray": "4 3" });
+  el("rect", { x: x0(hourIdx) - bw / 2 - 3, y: m.t - 3, width: bw + 6, height: H - m.t - m.b + 6, fill: "none", stroke: COL.obs, "stroke-width": 1.5, rx: 3 }, svg);
+  $("probLegend").innerHTML = `<span><i class="box" style="background:${COL.free}"></i>${t("free")}</span><span><i class="box" style="background:${COL.moderate}"></i>${t("moderate")}</span><span><i class="box" style="background:${COL.congested}"></i>${t("congested")}</span><span><i style="background:${COL.obs}"></i>${t("normalCong")}</span>`;
+}
+
+// ---------------------------------------------------------------- map with OpenStreetMap roads
+function deltaColor(d) {
+  if (d == null) return `rgb(${COL.neutral})`;
+  const k = Math.max(-1, Math.min(1, d / 15));
+  const mix = (a, b, q) => a.map((v, j) => Math.round(v + (b[j] - v) * q));
+  const rgb = (v) => v.split(",").map(Number), base = rgb(COL.neutral);
+  const c = k < 0 ? mix(base, rgb(COL.slower), -k) : mix(base, rgb(COL.faster), k);
+  return `rgb(${c.join(",")})`;
+}
+function renderMap() {
+  const svg = $("map"); svg.innerHTML = "";
+  const s = stad(), cells = s.cells.filter((c) => R.cells[c.geohash]);
+  const kx = Math.cos((s.lat * Math.PI) / 180);
+  const lon0 = Math.min(...cells.map((c) => c.cell_lon)) - DLON / 2, lon1 = Math.max(...cells.map((c) => c.cell_lon)) + DLON / 2;
+  const lat0 = Math.min(...cells.map((c) => c.cell_lat)) - DLAT / 2, lat1 = Math.max(...cells.map((c) => c.cell_lat)) + DLAT / 2;
+  const W = 760, pad = 14, sc = (W - 2 * pad) / ((lon1 - lon0) * kx), H = (lat1 - lat0) * sc + 2 * pad;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const X = (lon) => pad + (lon - lon0) * kx * sc, Y = (lat) => pad + (lat1 - lat) * sc;
+  const clip = el("clipPath", { id: "mapclip" }, el("defs", {}, svg));
+  el("rect", { x: pad, y: pad, width: W - 2 * pad, height: H - 2 * pad }, clip);
+  el("rect", { x: pad, y: pad, width: W - 2 * pad, height: H - 2 * pad, fill: COL.mapBg, stroke: COL.grid, rx: 10 }, svg);
+  // order: roads under the cells (cells are semi-transparent), cell labels and road names on top
+  const gRoads = el("g", { "clip-path": "url(#mapclip)", "pointer-events": "none" }, svg), gCells = el("g", {}, svg), gLab = el("g", { "pointer-events": "none" }, svg);
+  const occ = [];                        // boxes already used by text, so road names do not cover them
+  for (const c of cells) {
+    const p = R.cells[c.geohash], i = hourIdx;
+    const fill = mapMode === "class" ? COL[p.cls[i]] : deltaColor(p.speed[i] - p.normal[i]);
+    const x = X(c.cell_lon - DLON / 2), y = Y(c.cell_lat + DLAT / 2), w = DLON * kx * sc, h = DLAT * sc;
+    const g = el("g", { style: "cursor:pointer" }, gCells);
+    el("rect", { x: x + 1.5, y: y + 1.5, width: w - 3, height: h - 3, rx: 5, fill, opacity: 0.78, stroke: selCell === c.geohash ? COL.obs : COL.cellEdge, "stroke-width": selCell === c.geohash ? 3 : 1.5 }, g);
+    const strong = mapMode === "class" ? p.cls[i] === "congested" : Math.abs(p.speed[i] - p.normal[i]) > 9;
+    const tc = strong ? "#fff" : COL.cellText, halo = strong ? "rgba(70,30,22,.45)" : COL.cellHalo;
+    const lab = el("g", { style: "pointer-events:none" }, gLab);
+    let cy = y + h / 2;
+    if (c.ring === "R0" && Math.abs(X(s.lon) - (x + w / 2)) < 36 && Math.abs(Y(s.lat) - (cy + 5)) < 24) cy = Y(s.lat) + 26;
+    occ.push({ x: x + w / 2, y: cy + 5, hw: 32, hh: 16 });
+    txt(lab, x + w / 2, cy + 1, mapMode === "class" ? `${Math.round(p.speed[i])} ${t("unit")}` : `${sgn(p.speed[i] - p.normal[i], 0)}`, { "text-anchor": "middle", "font-size": 14, "font-weight": 700, fill: tc, stroke: halo, "stroke-width": 3, "paint-order": "stroke" });
+    txt(lab, x + w / 2, cy + 16, c.ring === "R0" ? t("r0") : c.ring, { "text-anchor": "middle", "font-size": 10.5, fill: tc, stroke: halo, "stroke-width": 2.5, "paint-order": "stroke" });
+    g.addEventListener("click", () => selectCell(c.geohash));
+    const ti = el("title", {}, g); ti.textContent = `${c.geohash} (${c.ring}) · ${R.clock[i]}\n${t("sMatch")}: ${f1(p.speed[i])} ${t("unit")}, ${t("normalDay")}: ${f1(p.normal[i])} ${t("unit")}\nP(${t("congested")}) ${(p.p_congested[i] * 100).toFixed(0)} %`;
+  }
+  // main roads from OpenStreetMap, drawn over the cells
+  const roads = META.roads && META.roads.roads ? META.roads.roads[s.key] || [] : [];
+  const style = { motorway: [4.5, 0.9], trunk: [3.8, 0.85], primary: [2.4, 0.75], secondary: [1.4, 0.6] };
+  const named = {};
+  for (const r of roads) {
+    const [w, o] = style[r.hw] || [1, 0.5];
+    const d = r.pts.map((p, k) => (k ? "L" : "M") + X(p[1]).toFixed(1) + " " + Y(p[0]).toFixed(1)).join("");
+    el("path", { d, fill: "none", stroke: COL.roadCase, "stroke-width": w + 2, opacity: 0.7, "stroke-linecap": "round", "stroke-linejoin": "round" }, gRoads);
+    el("path", { d, fill: "none", stroke: COL.road, "stroke-width": w, opacity: o, "stroke-linecap": "round", "stroke-linejoin": "round" }, gRoads);
+    const key = r.hw === "motorway" && r.ref ? `${r.ref}` : r.name;
+    if (key && r.hw !== "secondary") (named[key] = named[key] || []).push(r);
+  }
+  const labels = Object.entries(named).map(([k, rs]) => [k, rs.reduce((a, r) => a + r.pts.length, 0), rs.reduce((a, r) => (r.pts.length > a.pts.length ? r : a), rs[0])])
+    .sort((a, b) => b[1] - a[1]).slice(0, 5);
+  // stadium pin, north arrow and a 1 km scale bar
+  const sx = X(s.lon), sy = Y(s.lat);
+  el("circle", { cx: sx, cy: sy, r: 12, fill: "none", stroke: COL.match, "stroke-width": 2, opacity: 0.55 }, gLab);
+  el("circle", { cx: sx, cy: sy, r: 6, fill: COL.match, stroke: "#fff", "stroke-width": 2 }, gLab);
+  const nx = W - pad - 24, ny = pad + 16;
+  el("circle", { cx: nx, cy: ny + 6, r: 15, fill: COL.labelHalo, opacity: 0.8 }, gLab);
+  el("path", { d: `M${nx} ${ny - 4} l6 13 l-6 -3.5 l-6 3.5 z`, fill: COL.label }, gLab);
+  txt(gLab, nx, ny + 19, t("north"), { "text-anchor": "middle", "font-size": 10, "font-weight": 700, fill: COL.label });
+  const km = sc / 111.32, bx = pad + 14, by = H - pad - 14;
+  el("rect", { x: bx - 6, y: by - 18, width: km + 12, height: 26, rx: 7, fill: COL.labelHalo, opacity: 0.8 }, gLab);
+  el("path", { d: `M${bx} ${by - 4} v4 h${km.toFixed(1)} v-4`, fill: "none", stroke: COL.label, "stroke-width": 2 }, gLab);
+  txt(gLab, bx + km / 2, by - 6, "1 km", { "text-anchor": "middle", "font-size": 10.5, "font-weight": 700, fill: COL.label });
+  occ.push({ x: sx, y: sy, hw: 14, hh: 14 }, { x: nx, y: ny + 6, hw: 18, hh: 18 }, { x: bx + km / 2, y: by - 5, hw: km / 2 + 8, hh: 14 });
+  // road names: try a few points along the road and take the first one that covers nothing
+  const clear = (lx, ly, hw) => lx - hw > pad + 4 && lx + hw < W - pad - 4 && ly - 12 > pad && ly + 2 < H - pad
+    && occ.every((o) => Math.abs(o.x - lx) > o.hw + hw || Math.abs(o.y - (ly - 4)) > o.hh + 7);
+  for (const [k, , r] of labels) {
+    const name = k === "O-2" ? "O-2 (TEM)" : k, hw = name.length * 3.2 + 4;
+    for (const f of [0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9]) {
+      const p = r.pts[Math.round((r.pts.length - 1) * f)], lx = X(p[1]), ly = Y(p[0]);
+      if (!clear(lx, ly, hw)) continue;
+      txt(gLab, lx, ly - 4, name, { "text-anchor": "middle", "font-size": 10.5, "font-weight": 700, "font-style": "italic", fill: COL.label, stroke: COL.labelHalo, "stroke-width": 3, "paint-order": "stroke" });
+      occ.push({ x: lx, y: ly - 4, hw, hh: 7 });
+      break;
+    }
+  }
+  $("mapLegend").innerHTML = (mapMode === "class"
+    ? `<span><i class="box" style="background:${COL.free}"></i>${t("free")}</span><span><i class="box" style="background:${COL.moderate}"></i>${t("moderate")}</span><span><i class="box" style="background:${COL.congested}"></i>${t("congested")}</span><span>${t("mapNote")}</span>`
+    : `<span><i class="box" style="background:${deltaColor(-15)}"></i>${t("slower")}</span><span><i class="box" style="background:${deltaColor(0)};border:1px solid var(--g3)"></i>${t("same")}</span><span><i class="box" style="background:${deltaColor(8)}"></i>${t("faster")}</span><span>${t("mapNoteD")}</span>`)
+    + (roads.length ? `<span><i style="background:${COL.road}"></i>${t("osm")}</span>` : "")
+    + `<span><i class="box" style="background:${COL.match};border-radius:50%"></i>${t("stadiumPin")}</span>`;
+}
+
+// ---------------------------------------------------------------- map tab: hour summary, one cell, all cells
+function cellInfo(g) {                    // ring and compass direction of a cell seen from the stadium cell
+  const s = stad(), c = s.cells.find((x) => x.geohash === g), c0 = s.cells.find((x) => x.ring === "R0") || c;
+  if (!c || c.ring === "R0") return { ring: "R0", dir: "" };
+  const dx = (c.cell_lon - c0.cell_lon) * Math.cos((s.lat * Math.PI) / 180), dy = c.cell_lat - c0.cell_lat;
+  const k = (Math.round((Math.atan2(dx, dy) * 180) / Math.PI / 45) + 8) % 8;
+  return { ring: c.ring, dir: t("dirs")[k] };
+}
+function cellName(g) { const c = cellInfo(g); return c.ring === "R0" ? t("r0") : `${c.ring} · ${c.dir}`; }
+function selectCell(g) { selCell = g; renderMap(); renderCellChart(); renderCellTable(); }
+
+function renderMapHead() {
+  const s = stad(), i = R.input, S = R.summary;
+  $("mapHead").innerHTML = `<div class="matchline"><div class="title" style="font-size:19px">${esc(s.club)} – ${esc(titleCase(i.opponent))}</div>
+    <div class="sub">${esc(fmtDate(i.date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }))} · ${esc(t("kickoff"))} ${esc(i.time)} · ${esc(s.name)}</div>
+    <div class="tags"><span class="tag ${S.post_delta < -1 ? "hot" : ""}">${esc(t("kChange"))}: ${sgn(S.post_delta)} ${t("unit")}</span><span class="tag">${esc(t("kPeak"))}: ${esc(S.peak_clock)}</span></div></div>`;
+}
+function renderHourSum() {
+  const i = hourIdx, h = R.hours[i], w = win(h), cells = Object.values(R.cells), n = cells.length;
+  const cnt = { free: 0, moderate: 0, congested: 0 };
+  cells.forEach((c) => { cnt[c.cls[i]] = (cnt[c.cls[i]] || 0) + 1; });
+  const m = R.near.match.speed[i], nn = R.near.normal.speed[i];
+  $("hourSum").innerHTML = `<div class="k">${esc(t("hsTitle"))}</div>
+    <div class="clock">${esc(R.clock[i])}<span>${hLabel(h)} ${t("h")}${w ? " · " + esc(t("win")[w]) : ""}</span></div>
+    <div class="countbar">${["free", "moderate", "congested"].map((k) => (cnt[k] ? `<i style="width:${(cnt[k] / n) * 100}%;background:${COL[k]}"></i>` : "")).join("")}</div>
+    <div class="small">${esc(t("hsCount")(cnt, n))}</div>
+    <div class="near">${t("hsNear")(f1(m), f1(nn), sgn(m - nn))}</div>`;
+}
+function renderCellChart() {
+  const c = R.cells[selCell];
+  if (!c) return;
+  $("cellTitle").textContent = t("cellHours")(cellName(selCell));
+  const series = [{ name: t("sNormal"), v: c.normal, color: COL.normal, w: 3 }, { name: t("sMatch"), v: c.speed, color: COL.match, w: 3.5, dots: true }];
+  lineChart($("cellChart"), { hours: R.hours, clock: null, series, sel: hourIdx, W: 440, H: 270 });
+  $("cellLegend").innerHTML = series.slice().reverse().map((s) => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join("");
+}
+function renderCellTable() {
+  const i = hourIdx;
+  const rows = Object.entries(R.cells).map(([g, c]) => ({ g, c, d: c.speed[i] - c.normal[i] })).sort((a, b) => a.d - b.d);
+  $("cellListTitle").textContent = t("cellList")(R.clock[i]);
+  let h = `<tr><th>${t("thCell")}</th><th class="num">${t("thMatch")}</th><th class="num">${t("thNormal")}</th><th class="num">${t("thChange")}</th><th class="num">${t("thPCs")}</th></tr>`;
+  for (const r of rows)
+    h += `<tr class="click ${r.g === selCell ? "sel" : ""}" data-g="${r.g}"><td><span class="pill" style="background:${COL[r.c.cls[i]]}"></span>${esc(cellName(r.g))}</td>
+      <td class="num"><b>${f1(r.c.speed[i])}</b></td><td class="num">${f1(r.c.normal[i])}</td>
+      <td class="num" style="color:${r.d < -1 ? COL.congested : "inherit"}">${sgn(r.d)}</td><td class="num">${Math.round(r.c.p_congested[i] * 100)}%</td></tr>`;
+  $("cellTbl").innerHTML = h;
+  $("cellTbl").querySelectorAll("tr[data-g]").forEach((tr) => { tr.onclick = () => selectCell(tr.dataset.g); });
+}
+
+const setPlayIcons = (x) => document.querySelectorAll(".play").forEach((b) => { b.textContent = x; });
+function togglePlay() { if (timer) stopPlay(); else { setPlayIcons("❚❚"); timer = setInterval(() => { hourIdx = (hourIdx + 1) % R.hours.length; renderHourViews(); }, 900); } }
+function stopPlay() { clearInterval(timer); timer = null; setPlayIcons("▶"); }
+
+function renderTable() {
+  const nm = R.near.match, nn = R.near.normal;
+  let h = `<tr><th>${t("thTime")}</th><th>${t("thHour")}</th><th>${t("thWin")}</th><th class="num">${t("thMatch")}</th><th class="num">${t("thNormal")}</th><th class="num">${t("thChange")}</th><th class="num">${t("thPC")}</th></tr>`;
+  R.hours.forEach((hr, i) => {
+    const d = nm.speed[i] - nn.speed[i], w = win(hr);
+    h += `<tr class="${i === hourIdx ? "sel" : ""}"><td>${R.clock[i]}</td><td>${hLabel(hr)}</td><td>${w ? t("win")[w] : ""}</td>
+      <td class="num"><b>${f1(nm.speed[i])}</b></td><td class="num">${f1(nn.speed[i])}</td>
+      <td class="num" style="color:${d < -1 ? COL.congested : "inherit"}">${sgn(d)}</td>
+      <td class="num"><span class="pill" style="background:${COL.congested};opacity:${0.2 + 0.8 * nm.p_congested[i]}"></span>${Math.round(nm.p_congested[i] * 100)} %</td></tr>`;
+  });
+  $("tbl").innerHTML = h + `<tr><td colspan="7" class="hint">${t("tableNote")}</td></tr>`;
+}
+
+function renderHistory() {
+  const H = R.history, s = stad();
+  let h = `<h3 style="margin-bottom:8px">${t("histTitle")}</h3><p style="margin:0 0 10px">${t("histText")(esc(shortName(s)), H.slot_n, t("slot")[R.match.kickoff_slot])}</p>`;
+  if (H.same_opponent.length) {
+    h += `<b>${t("histOpp")}</b><table style="margin-top:6px"><tr><th>${t("thDate")}</th><th>${t("thKo")}</th><th>${t("thComp")}</th><th class="num">${t("thAfter")}</th><th class="num">${t("thVeh")}</th></tr>`;
+    for (const r of H.same_opponent)
+      h += `<tr><td>${esc(r.date)}</td><td>${esc(r.time)}</td><td>${esc(r.competition)}</td><td class="num">${r.post_delta == null ? "–" : sgn(r.post_delta) + " " + t("unit")}</td><td class="num">${r.pct_veh == null ? "–" : sgn(r.pct_veh) + " %"}</td></tr>`;
+    h += `</table><p class="hint">${t("histNote")}</p>`;
+  } else h += `<p style="margin:0">${t("histNone")}</p>`;
+  $("history").innerHTML = h;
+}
+
+function renderWorks() {
+  const W = R.works, s = stad();
+  $("infoGrid").classList.toggle("solo", !W);
+  if (!W) { $("works").style.display = "none"; return; }
+  $("works").style.display = "";
+  const chips = Object.entries(W.by_type).map(([k, v]) => `<span class="tag">${esc(t("wtype")[k] || k)}: ${v}</span>`).join("");
+  const items = W.items.map((w) => `<li><b>${esc(w.date)}</b> · ${esc(t("wtype")[w.type] || w.type)}${w.days != null && w.days >= 1 ? ` · <b>${t("day")(Math.round(w.days))}</b>` : ""} · ${dec(String(w.km))} ${t("fromStadium")}<br><span class="meta">${esc(w.title)}</span></li>`).join("");
+  $("works").innerHTML = `<h3 style="margin-bottom:6px">${esc(t("worksTitle")(shortName(s)))}</h3><p style="margin:0">${t("worksText")(W, META.data_end)}</p>
+    <div class="chips">${chips}</div><ul class="works" style="margin:0;padding-left:18px">${items}</ul><p class="hint">${t("worksHint")}</p>`;
+}
+
+function renderPrintHead() {
+  $("printHead").innerHTML = `<b>${esc(t("title"))}</b> · ${new Date().toLocaleDateString(LANG === "tr" ? "tr-TR" : "en-GB")} · ${esc(t("subtitle"))}`;
+}
+
+// ---------------------------------------------------------------- export
+function downloadCsv() {
+  if (!R) return;
+  if (view === "map") return downloadCellsCsv();
+  const s = stad(), nm = R.near.match, nn = R.near.normal, U = R.uncertainty;
+  const lines = [`# ${t("title")}`, `# ${s.club} - ${titleCase(R.input.opponent)}; ${R.input.date} ${R.input.time}; ${s.name}; ${t("comp")[R.input.competition]}`,
+    `# ${t("tableNote")}; ${t("lastData")} ${META.data_end}`, t("csvCols").join(",")];
+  R.hours.forEach((h, i) => {
+    const w = win(h);
+    lines.push([R.clock[i], h, w ? t("win")[w] : "", nm.speed[i].toFixed(2), nn.speed[i].toFixed(2), (nm.speed[i] - nn.speed[i]).toFixed(2),
+      U ? U.band_lo[i].toFixed(2) : "", U ? U.band_hi[i].toFixed(2) : "", nm.p_congested[i].toFixed(3)].join(","));
+  });
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `forecast_${R.input.stadium}_${R.input.date}_${R.input.time.replace(":", "")}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function downloadCellsCsv() {
+  const s = stad();
+  const lines = [`# ${t("title")}`, `# ${s.club} - ${titleCase(R.input.opponent)}; ${R.input.date} ${R.input.time}; ${s.name}; ${t("comp")[R.input.competition]}`,
+    `# km/h; ${t("lastData")} ${META.data_end}`, t("csvColsCells").join(",")];
+  R.hours.forEach((h, i) => {
+    for (const [g, c] of Object.entries(R.cells)) {
+      const ci = cellInfo(g);
+      lines.push([R.clock[i], h, g, ci.ring, ci.dir, c.speed[i].toFixed(2), c.normal[i].toFixed(2), (c.speed[i] - c.normal[i]).toFixed(2), c.p_congested[i].toFixed(3)].join(","));
+    }
+  });
+  const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `cells_${R.input.stadium}_${R.input.date}_${R.input.time.replace(":", "")}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---------------------------------------------------------------- test tab
+function renderTest() {
+  const TE = META.test_eval;
+  if (!TE) { $("testIntro").textContent = "No test data in the model file. Run: python run_scenario.py"; return; }
+  const S = TE.summary, u = t("unit");
+  $("testIntro").innerHTML = t("testIntro")(S);
+  const tiles = [[t("tN"), String(S.n), t("tNs")], [t("tMae"), `${f1(S.mae_post)} ${u}`, t("tMaes")],
+    [t("tMaeD"), `${f1(S.mae_delta)} ${u}`, t("tMaeDs")], [t("tR"), `r = ${dec(S.r_delta.toFixed(2))}`, t("tRs")(Math.round(S.share_slowdown_both * 100))]];
+  $("testKpis").innerHTML = tiles.map(([k, v, s]) => `<div class="card kpi"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join("");
+  if (testSel == null) {            // start with a typical match: a clear observed slowdown, forecast closest to it
+    const err = (m) => Math.abs(m.post_pred_delta - m.post_obs_delta);
+    const clear = TE.matches.map((m, i) => [m, i]).filter(([m]) => m.post_obs_delta < -4);
+    testSel = clear.length ? clear.reduce((a, b) => (err(b[0]) < err(a[0]) ? b : a))[1] : 0;
+  }
+  renderScatter(); renderTestCurve(); renderTestTable();
+}
+const matchName = (m) => `${stadByKey(m.stadium).club} – ${titleCase(m.opponent)}`;
+function renderScatter() {
+  const TE = META.test_eval, svg = $("scatter"); svg.innerHTML = "";
+  const W = 520, H = 400, m = { l: 52, r: 16, t: 14, b: 44 }; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const xs = TE.matches.map((c) => c.post_obs_delta), ys = TE.matches.map((c) => c.post_pred_delta);
+  const lo = Math.floor(Math.min(...xs, ...ys) / 5) * 5, hi = Math.max(5, Math.ceil(Math.max(...xs, ...ys) / 5) * 5);
+  const X = (v) => m.l + ((v - lo) * (W - m.l - m.r)) / (hi - lo), Y = (v) => m.t + ((hi - v) * (H - m.t - m.b)) / (hi - lo);
+  for (let v = lo; v <= hi; v += 5) {
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: COL.grid }, svg); txt(svg, m.l - 6, Y(v) + 4, v, { "text-anchor": "end" });
+    el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, stroke: COL.grid }, svg); txt(svg, X(v), H - m.b + 16, v, { "text-anchor": "middle" });
+  }
+  el("line", { x1: X(lo), y1: Y(lo), x2: X(hi), y2: Y(hi), stroke: COL.hist, "stroke-dasharray": "5 4", "stroke-width": 1.5 }, svg);
+  txt(svg, (m.l + W - m.r) / 2, H - 6, `${t("xLab")} (${t("unit")})`, { "text-anchor": "middle" });
+  const yl = txt(svg, 14, (m.t + H - m.b) / 2, `${t("yLab")} (${t("unit")})`, { "text-anchor": "middle" }); yl.setAttribute("transform", `rotate(-90 14 ${(m.t + H - m.b) / 2})`);
+  TE.matches.forEach((c, i) => {
+    const on = i === testSel;
+    const dot = el("circle", { cx: X(c.post_obs_delta), cy: Y(c.post_pred_delta), r: on ? 8 : 5.5, fill: on ? COL.match : COL.hist, opacity: on ? 1 : 0.8, stroke: COL.dotEdge, "stroke-width": 1.5, style: "cursor:pointer" }, svg);
+    const ti = el("title", {}, dot); ti.textContent = `${c.date} · ${matchName(c)}`;
+    dot.addEventListener("click", () => { testSel = i; renderScatter(); renderTestCurve(); renderTestTable(); });
+  });
+}
+function renderTestCurve() {
+  const c = META.test_eval.matches[testSel], hours = META.test_eval.hours || [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
+  $("testCurveTitle").textContent = `${fmtDate(c.date, { day: "numeric", month: "short", year: "numeric" })} · ${c.time} · ${matchName(c)}`;
+  const series = [{ name: t("fNormal"), v: c.pred_normal, color: COL.normal, w: 2.5 }, { name: t("oCtrl"), v: c.obs_ctrl, color: COL.hist, w: 2, dash: "6 5" },
+    { name: t("fMatch"), v: c.pred_match, color: COL.match, w: 3.2, dots: true }, { name: t("oMatch"), v: c.obs_match, color: COL.obs, w: 2.6 }];
+  lineChart($("testCurve"), { hours, series, W: 560, H: 320 });
+  $("testLegend").innerHTML = series.slice().reverse().map((s) => `<span><i class="${s.dash ? "dash" : ""}" style="background:${s.dash ? "transparent" : s.color}"></i>${esc(s.name)}</span>`).join("");
+  $("testCurveHint").textContent = `${t("testCurveHint")} ${t("thFc")}: ${sgn(c.post_pred_delta)} ${t("unit")} · ${t("thOc")}: ${sgn(c.post_obs_delta)} ${t("unit")}`;
+}
+function renderTestTable() {
+  const TE = META.test_eval, u = t("unit");
+  let h = `<tr><th>${t("thDate")}</th><th>${t("thMatchName")}</th><th>${t("stadium")}</th><th class="num">${t("thFc")}</th><th class="num">${t("thOc")}</th><th class="num">${t("thErr")}</th></tr>`;
+  TE.matches.forEach((c, i) => {
+    h += `<tr class="click ${i === testSel ? "sel" : ""}" data-i="${i}"><td>${esc(c.date)} ${esc(c.time)}</td><td>${esc(matchName(c))}</td><td>${esc(shortName(stadByKey(c.stadium)))}</td>
+      <td class="num">${sgn(c.post_pred_delta)} ${u}</td><td class="num">${sgn(c.post_obs_delta)} ${u}</td><td class="num">${sgn(c.post_pred - c.post_obs)} ${u}</td></tr>`;
+  });
+  $("testTable").innerHTML = h;
+  $("testTable").querySelectorAll("tr.click").forEach((r) => r.addEventListener("click", () => { testSel = +r.dataset.i; renderScatter(); renderTestCurve(); renderTestTable(); }));
+}
+
+init();
+</script>
+</body>
+</html>

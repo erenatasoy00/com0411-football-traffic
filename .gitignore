@@ -1,0 +1,18 @@
+# Python environment and caches
+.venv/
+__pycache__/
+*.pyc
+
+# macOS / Office temporary files
+.DS_Store
+~$*
+
+# outputs of tools/build_final_report.py (the submitted report is Project_Report.pdf)
+build_report/
+teslim/
+
+# large raw files of the two additional IBB sources (~270 MB); links in Dataset_Links.txt
+data/raw/extra/
+
+# 24 MB intermediate table, rebuilt by run_all.py
+data/interim/traffic_clean.parquet

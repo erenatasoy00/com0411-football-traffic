@@ -1,0 +1,15 @@
+id,check,value,threshold,passed
+QC01,Study months available on the IBB portal,all,all,True
+QC02,"Unique (geohash, hour) keys",0,0 duplicates,True
+QC03,Speed range and min<=avg<=max after cleaning,0,0 violations,True
+QC04,Remaining missing share in kept cells,0.0575,<= 0.20,True
+QC05,IQR-rule outlier share of cell-hours,0.0352,<= 0.10,True
+QC06,Geohash/coordinate mismatch share,0.0,<= 0.01,True
+QC07,Time-zone sanity: hour with fewest vehicles,3,01-06 local,True
+QC08,Weather join completeness (missing share),0.0,<= 0.01,True
+QC09,"Duplicate fixtures (stadium, kick-off)",0,0,True
+QC10,Kick-off times in 11:00-23:59,0,0 outside,True
+QC11,Home club / stadium consistency,0,0 (or documented),True
+QC12,Main-season matches with >=2 control days,0.907,>= 0.90,True
+QC13,Standardised speed: mean 0 and SD 1 in every cell,verified,|mean| and |SD-1| < 1e-6,True
+QC14,Complete hourly grid (rows per cell identical),1,1 distinct count,True

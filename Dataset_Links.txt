@@ -1,0 +1,35 @@
+Datasets of the project "The Impact of Football Matches on Local Traffic Patterns in Istanbul" (COM0411)
+All sources are open. The prepared datasets are included in FODS_Final_Code_and_Data.zip (paths below).
+
+MAIN DATA
+1. Hourly Traffic Density Data Set - Istanbul Metropolitan Municipality (IBB) Open Data Portal
+   https://data.ibb.gov.tr/en/dataset/hourly-traffic-density-data-set
+   Downloaded through the portal's CKAN API (monthly files January 2020 - January 2025, study cells only):
+   https://data.ibb.gov.tr/api/3/action/package_show?id=hourly-traffic-density-data-set
+2. Match fixtures - Turkish Football Federation (club fixture lists and match pages)
+   https://www.tff.org/default.aspx?pageID=198
+   UEFA home matches - English Wikipedia season articles, for example
+   https://en.wikipedia.org/wiki/2023%E2%80%9324_Galatasaray_S.K._season
+   https://en.wikipedia.org/wiki/2023%E2%80%9324_Fenerbah%C3%A7e_S.K._season
+   https://en.wikipedia.org/wiki/2023%E2%80%9324_Be%C5%9Fikta%C5%9F_J.K._season
+3. Hourly weather (ERA5 reanalysis) - Open-Meteo Historical Weather API
+   https://open-meteo.com/en/docs/historical-weather-api   (endpoint https://archive-api.open-meteo.com/v1/archive)
+4. Turkish public holidays - Python package "holidays": https://pypi.org/project/holidays/
+
+ADDITIONAL SOURCES (Phase 2 validation and forecast panel)
+5. Rail systems station-based passenger and journey numbers - IBB Open Data Portal
+   https://data.ibb.gov.tr/dataset/rayli-sistemler-istasyon-bazli-yolcu-ve-yolculuk-sayilari
+6. Transport Management Centre (UYM) traffic announcements - IBB Open Data Portal
+   https://data.ibb.gov.tr/dataset/ulasim-yonetim-merkezi-trafik-duyurulari-verisi
+7. Main roads around the stadiums for the panel map - OpenStreetMap (ODbL), via the Overpass API
+   https://www.openstreetmap.org/copyright   (API https://overpass-api.de/api/interpreter)
+
+PREPARED DATA IN THE CODE PACKAGE (folder FODS_Final_Code_and_Data)
+  data/processed/panel_cell_hour.parquet       analysis-ready cell-hour panel; columns in data/processed/data_dictionary.csv
+  data/processed/effects_*.parquet, controls_*.csv   match effects and matched control days
+  data/processed/fixtures_clean.csv, cells.csv, qc_report.json
+  data/processed/extra_rail_daily.csv, extra_uym_near_stadiums.csv, osm_roads_stadiums.json   additional sources
+  data/raw/ibb/*.parquet                       IBB records of the study cells, one file per month
+  data/raw/ibb_inventory.csv, ibb_coverage.json   inventory of the IBB monthly files
+  data/raw/weather_hourly.parquet, data/raw/fixtures_tff.csv, data/raw/sources/*.txt
+  "bash run.sh --offline" rebuilds every result from these files; "bash run.sh" downloads the sources again.

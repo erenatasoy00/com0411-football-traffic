@@ -1,0 +1,25 @@
+column,group,type,description
+geohash,key,str,6-character geohash of the IBB cell (~0.92 km x 0.61 km)
+ts,key,datetime[tz],"Start of the hourly interval, Europe/Istanbul (UTC+3)"
+stadium,key,str,"Stadium the cell is assigned to (RAMS, SARACOGLU, TUPRAS)"
+ring / ring_k,spatial,str/int,"Geohash ring around the stadium cell: R0 (k=0), R1 (k=1), R2 (k=2), DISTAL (k=5)"
+"cell_lat, cell_lon",spatial,float,Cell centre coordinates (decoded geohash)
+"avg_speed, min_speed, max_speed",traffic,float,"Hourly speeds in the cell (km/h), IBB"
+vehicles / log_vehicles,traffic,float,"Distinct observed vehicles (relative intensity, not volume) and log(1+x)"
+"is_missing, outage_hour",quality,bool,Hour without a valid observation (not imputed); system-wide outage hour
+"low_sample, outlier, iqr_low, iqr_high",quality,bool/float,<5 vehicles; outside Q1-1.5 IQR / Q3+1.5 IQR of the cell hour-of-week; the limits
+cell_ok,quality,bool,Cell has >=80 % hourly coverage; only these cells are analysed
+"hour, dow, month, is_weekend",calendar,int/bool,Calendar features
+"is_holiday, is_holiday_eve",calendar,bool,Official Turkish holiday; religious-holiday eve or 28 October
+temperature_2m ... weather_code,weather,float/int,Open-Meteo ERA5 hourly weather at the stadium
+"is_rain, is_heavy_rain",weather,bool,Precipitation >=0.1 mm/h and >=2.5 mm/h
+"match_id, h_rel, window",event,str/int/str,"Match in the +/-6 h span, hour relative to rounded kick-off, pre/during/post/other/none"
+"is_match_day, any_big3_match_day",event,bool,Match at this stadium on this date; match at any of the three stadiums
+"kickoff_slot, competition_type, is_derby, is_big_match, opponent",event,cat/bool,Match attributes from the TFF fixture
+"spectators_allowed, capacity, season, season_role",event,bool/int/str,Crowd proxy and season (main or closed-doors placebo)
+"speed_z_cell, vehicles_minmax",transformed,float,z-score standardisation of speed and min-max normalisation of vehicles within each cell
+"temp_bin, vehicles_qbin",transformed,int,Temperature in 5 equal-width bins; vehicles in 5 equal-frequency bins
+"win_pre, win_during, win_post",transformed,bool,Dummy variables of the event window
+"ff_speed, speed_ratio",target support,float,"Cell free-flow speed (85th pct, 01-04 h, non-match days) and avg_speed / ff_speed"
+congestion_class,target,cat,"free (>=0.75), moderate (0.50-0.75), congested (<0.50) of speed_ratio"
+"abnormal_slowdown, speed_z_how",target,bool/float,z-score of speed vs the cell hour-of-week mean and SD < -2

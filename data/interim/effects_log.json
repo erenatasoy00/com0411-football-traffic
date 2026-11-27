@@ -1,0 +1,23 @@
+{
+  "main": {
+    "matches_in": 194,
+    "matches_with_controls": 176,
+    "match_day_coverage_below_80": 19,
+    "weather_relaxed": 81,
+    "mean_controls": 2.7216494845360826
+  },
+  "closed_doors": {
+    "matches_in": 69,
+    "matches_with_controls": 62,
+    "match_day_coverage_below_80": 0,
+    "weather_relaxed": 34,
+    "mean_controls": 2.652173913043478
+  },
+  "placebo_dates": {
+    "matches_in": 194,
+    "matches_with_controls": 150,
+    "match_day_coverage_below_80": 19,
+    "weather_relaxed": 117,
+    "mean_controls": 2.350515463917526
+  }
+}
